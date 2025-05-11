@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Legatus - Create Account</title>
+    <link rel="icon" href="../images/web icon.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <style>
+      :root {
+        --bg-color: #797d86;
+        --card-bg: #dae5ef;
+        --primary-color: #002f5f;
+        --secondry-color: #94abc1;
+        --dark-color: #2a2a2a;
+        --light-color: #ffffff;
+        --SwampTime-color: #002f5f;
+        --text-color: #000000;
+        --muted-color: #cccccc;
+        --border-color: #dddddd;
+        --translucent-bg: rgba(255, 255, 255, 0.1);
+        --bg-color: #dae5ef;
+        --card-bg: #ffffff;
+        --primary-color: #002f5f;
+        --secondry-color: #95b3d7;
+        --dark-color: #002f5f;
+        --light-color: #ffffff;
+        --SwampTime-color: #002f5f;
+        --text-color: #333333;
+        --muted-color: #bbccdd;
+        --border-color: #dae5ef;
+        --translucent-bg: rgba(218, 229, 239, 0.3);
+      }
+
+      body {
+        background-color: var(--bg-color);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .main-card {
+        background-color: var(--card-bg);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        max-width: 1000px;
+      }
+
+      .form-side {
+        padding: 40px;
+      }
+
+      .preview-side {
+        background-color: var(--dark-color);
+        color: var(--light-color);
+        position: relative;
+      }
+
+      .logo {
+        font-weight: bold;
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 20px;
+        color: var(--primary-color);
+        margin-bottom: 30px;
+      }
+
+      .btn-submit {
+        background-color: var(--primary-color);
+        border: none;
+        border-radius: 25px;
+        padding: 10px;
+      }
+      .btn-submit:hover {
+        background-color: var(--secondry-color);
+      }
+
+      .btn-guest {
+        background-color: transparent;
+        border: 1px solid var(--primary-color);
+        color: var(--primary-color);
+        border-radius: 25px;
+        padding: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .btn-guest:hover {
+        background-color: rgba(0, 47, 95, 0.1);
+      }
+
+      .position-relative {
+        position: relative;
+      }
+      /* 
+        .password-visability-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            z-index: 2;
+        } */
+
+      .error-message {
+        display: block;
+        width: 100%;
+        margin-top: 0.25rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .team-preview {
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .account-type-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .account-type-option {
+        flex: 1;
+        position: relative;
+      }
+
+      .account-type-option input[type="radio"] {
+        opacity: 0;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+      }
+
+      .account-type-label {
+        display: block;
+        text-align: center;
+        padding: 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .account-type-option input[type="radio"]:checked + .account-type-label {
+        background-color: var(--secondry-color);
+        border-color: var(--secondry-color);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="main-card row mx-auto">
+        <div class="col-md-5 form-side">
+          <div class="d-flex align-items-center">
+            <div class="logo" style="font-size: 2.7rem; letter-spacing: 1px">
+              Legatus
+            </div>
+          </div>
+          <h2 id="page_title" class="mb-2">Create an account</h2>
+
+          <form>
+            <div class="mb-3">
+              <label for="fullName" class="form-label">Full name</label>
+              <input
+                type="text"
+                class="form-control rounded-pill"
+                id="fullName"
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control rounded-pill"
+                id="email"
+              />
+            </div>
+
+            <div
+              id="storeNameContainer"
+              class="form-group mb-3"
+              style="display: none"
+            >
+              <label for="storeName" class="form-label">Store Name</label>
+              <input
+                type="text"
+                id="storeName"
+                name="storeName"
+                class="form-control rounded-pill"
+              />
+              <div
+                id="storeNameError"
+                class="error-message"
+                style="
+                  color: red;
+                  font-size: 12px;
+                  margin-top: 5px;
+                  display: none;
+                "
+              ></div>
+            </div>
+
+            <div class="mb-4">
+              <label for="password" class="form-label">Password</label>
+              <div class="position-relative">
+                <input
+                  type="password"
+                  class="form-control rounded-pill"
+                  id="password"
+                />
+                <!-- <span class="password-visability-toggle">
+                                <i class="far fa-eye"></i>
+                            </span> -->
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Account type</label>
+              <div class="account-type-container">
+                <div class="account-type-option">
+                  <input
+                    type="radio"
+                    name="accountType"
+                    id="seller"
+                    value="seller"
+                  />
+                  <label for="seller" class="account-type-label">
+                    <i class="fas fa-store me-2"></i>Seller
+                  </label>
+                </div>
+                <div class="account-type-option">
+                  <input
+                    type="radio"
+                    name="accountType"
+                    id="customer"
+                    value="customer"
+                    checked
+                  />
+                  <label for="customer" class="account-type-label">
+                    <i class="fas fa-user me-2"></i>Customer
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <button type="submit" class="btn btn-submit text-light w-100">
+                Submit
+              </button>
+            </div>
+            <div class="mb-3">
+              <button type="button" class="btn btn-guest w-100">
+                Continue as Guest
+              </button>
+            </div>
+          </form>
+
+          <div class="mt-4 text-center">
+            <small
+              >Have any account?
+              <a href="Sign.html" class="text-decoration-none"
+                >Sign in</a
+              ></small
+            >
+          </div>
+
+          <div class="mt-5 text-center">
+            <small
+              ><a href="#" class="text-decoration-none text-muted"
+                >Terms & Conditions</a
+              ></small
+            >
+          </div>
+        </div>
+
+        <div class="col-md-7 p-0 preview-side d-none d-md-block">
+          <div class="team-preview">
+            <img id="sign_image"
+              src="../images/15.png"
+              alt="Team working together"
+              class="img-fluid w-100 h-100 object-fit-cover"
+              style="position: absolute; top: 0; left: 0; bottom: 0; right: 0"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="SignUp.js"></script>
+  </body>
+</html>

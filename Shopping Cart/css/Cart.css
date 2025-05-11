@@ -1,0 +1,24 @@
+.Cart-Special-BG {
+  background-color: #e2e5e8;
+  padding: 1rem;
+}
+.cart-item-mobile {
+  display: none;
+}
+@media (max-width: 525px) {
+  .cart-item-desktop {
+    display: none;
+  }
+  .cart-item-mobile {
+    display: block;
+  }
+  .product-img-mobile {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+  }
+}
+
+.bg-Cart-Footer {
+  background-color: rgb(237, 241, 243) !important;
+}

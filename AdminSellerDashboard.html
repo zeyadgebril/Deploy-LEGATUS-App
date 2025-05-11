@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard For Seller</title>
+    <link rel="icon" href="./images/web icon.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <!-- Import access control -->
+    <script type="module" src="Sign/Initialize.js"></script>
+    <style>
+      body {
+        background-color: #f5f7f6;
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .sidebar {
+        width: 190px;
+        background-color: #002f5f;
+        color: #fff;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+      }
+      .sidebar .logo {
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+      }
+      .sidebar .logo img {
+        width: 140px;
+      }
+      .sidebar a {
+        color: #bdc3c7;
+        text-decoration: none;
+        padding: 15px 20px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: background-color 0.3s;
+      }
+      .sidebar a.active,
+      .sidebar a:hover {
+        background-color: #112235;
+        color: #fff;
+      }
+      .main-content {
+        margin-left: 190px;
+        padding: 20px;
+      }
+      .navbar {
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .search-input {
+        max-width: 300px;
+      }
+      .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+      .table-responsive {
+        overflow-x: auto;
+        table-layout: fixed;
+      }
+      .table-sm th,
+      .table-sm td {
+        padding: 0.6rem;
+        text-align: center;
+        vertical-align: middle;
+      }
+      th {
+        background-color: #1a1a2e;
+        color: #fff;
+      }
+      td {
+        word-wrap: break-word;
+      }
+      .btn {
+        border-radius: 12px;
+        padding: 2px 6px;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+      }
+      .btn-reset {
+        background-color: #0f3460;
+        color: #fff;
+      }
+      .btn-delete {
+        background-color: #d63031;
+        color: #fff;
+      }
+      .btn-reset:hover {
+        background-color: #1271d1;
+      }
+      .btn-delete:hover {
+        background-color: #f24848;
+      }
+      .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo text-center py-4">
+        <h1
+          class="d-flex align-items-center justify-content-center gap-2 text-white fs-3 m-0"
+        >
+          <i class="bi bi-shield-lock"></i>
+          <span>Admin</span>
+        </h1>
+      </div>
+      <a href="AdminDashboard.html"><i class="bi bi-person"></i> Customer</a>
+      <a href="AdminSellerDashboard.html" class="active"
+        ><i class="bi bi-shop"></i> Seller</a
+      >
+      <a href="AdminProductDashboard.html"
+        ><i class="bi bi-bag"></i> Products</a
+      >
+      <a href="AdminDashboardCustomerService.html"
+        ><i class="bi bi-people"></i> Customer Service</a
+      >
+      <a href="index.html"><i class="bi bi-house-door-fill"></i> Home Page</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <nav class="navbar navbar-light mb-3">
+        <div class="container-fluid">
+          <div class="input-group search-input">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input
+              id="searchInput"
+              class="form-control"
+              type="search"
+              placeholder="Search by Name"
+              aria-label="Search"
+            />
+          </div>
+        </div>
+      </nav>
+
+      <h3 class="mb-3">Sellers Data</h3>
+
+      <div class="card p-3">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover table-sm align-middle">
+            <thead>
+              <tr>
+                <th style="width: 5%">ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Brand</th>
+                <th>Store Name</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="sellerTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function renderSellers() {
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        let products = JSON.parse(localStorage.getItem("products")) || [];
+        let sellers = users.filter((user) => user.role === "seller");
+
+        sellers.forEach((seller, idx) => {
+          seller.displayId = String(idx + 1).padStart(3, "0");
+
+          const sellerProducts = products.filter(
+            (product) =>
+              product.sellerId === seller.id ||
+              product.sellerEmail === seller.email
+          );
+
+          const uniqueBrands = [...new Set(sellerProducts.map((p) => p.brand))];
+
+          seller.brands =
+            uniqueBrands.length > 0 ? uniqueBrands.join(", ") : "-";
+        });
+
+        const tbody = document.getElementById("sellerTableBody");
+        tbody.innerHTML = "";
+
+        if (sellers.length === 0) {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+      <td colspan="6" style="text-align:center; color: gray;">No Data Available</td>
+    `;
+          tbody.appendChild(row);
+          return;
+        }
+
+        sellers.forEach((seller) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+      <td>${seller.displayId}</td>
+      <td>${seller.name}</td>
+      <td>${seller.email}</td>
+      <td>${seller.brands}</td>
+      <td>${seller.store}</td>
+      <td>
+        <div class="action-buttons">
+          <button class="btn btn-reset" onclick="resetSellerPassword('${seller.id}')"><i class="bi bi-arrow-clockwise"></i> Reset Password</button>
+          <button class="btn btn-delete" onclick="deleteSeller('${seller.id}')">
+            <i class="bi bi-trash"></i> Delete
+          </button>
+        </div>
+      </td>
+    `;
+          tbody.appendChild(row);
+        });
+      }
+      function deleteSeller(id) {
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        users = users.filter(
+          (user) => !(user.role === "seller" && String(user.id) === String(id))
+        );
+        localStorage.setItem("users", JSON.stringify(users));
+
+        let products = JSON.parse(localStorage.getItem("products")) || [];
+        products = products.filter(
+          (product) => String(product.sellerId) !== String(id)
+        );
+        localStorage.setItem("products", JSON.stringify(products));
+
+        renderSellers();
+      }
+
+      function resetSellerPassword(id) {
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        const sellerIndex = users.findIndex(
+          (user) => user.role === "seller" && String(user.id) === String(id)
+        );
+        if (sellerIndex !== -1) {
+          const newPassword = prompt("Please enter the new password:");
+          if (newPassword && newPassword.trim() !== "") {
+            users[sellerIndex].password = newPassword.trim();
+            localStorage.setItem("users", JSON.stringify(users));
+            renderSellers();
+            alert("Password has been successfully updated.");
+          } else {
+            alert("No new password entered.");
+          }
+        } else {
+          alert("Seller not found.");
+        }
+      }
+
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", function () {
+          const filter = this.value.trim().toLowerCase();
+          document.querySelectorAll("#sellerTableBody tr").forEach((row) => {
+            const brand = row
+              .querySelector("td:nth-child(2)")
+              .textContent.trim()
+              .toLowerCase();
+            row.style.display = brand.includes(filter) ? "" : "none";
+          });
+        });
+
+      window.onload = renderSellers;
+    </script>
+  </body>
+</html>

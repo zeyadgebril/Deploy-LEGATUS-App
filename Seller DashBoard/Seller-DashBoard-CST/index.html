@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Document</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="all.min.css" />
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <link rel="stylesheet" href="dashboard.css" />
+
+    <!-- JS -->
+    <script src="all.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <script src="bootstrap.bundle.min.js"></script>
+
+    <style></style>
+  </head>
+  <body>
+    <!-- Desctop Design -->
+    <div class="m-0 p-0 dashboard-item-desktop">
+      <div class="row bg-warning">
+        <!-- dashboard section -->
+        <div class="col-2 dashboard-Desctop-style">
+          <div class="d-flex flex-column">
+            <!--Logo Img-->
+            <div class="box">
+              <a href="#" class="text-decoration-none d-flex align-items-end">
+                <img src="logo.png" class="img-fluid w-100 mx-auto" alt="" />
+              </a>
+            </div>
+            <!--End Logo Img-->
+            <!-- Dashboard content -->
+            <div class="mx-2">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1"
+                    aria-current="page"
+                    href="#"
+                    ><i class="fa-solid fa-gear dashboard-icon-style me-1"></i>
+                    Dashboard</a
+                  >
+                </li>
+
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1"
+                    href="#"
+                  >
+                    <i class="fa-solid fa-boxes-packing me-1"></i>
+                    <span>Orders</span>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1"
+                    data-bs-toggle="collapse"
+                    href="#ui-basic"
+                    aria-expanded="false"
+                    aria-controls="ui-basic"
+                  >
+                    <i class="fa-solid fa-tags me-1"></i>
+                    <span class="menu-title">Products </span>
+                    <i class="menu-arrow"></i>
+                  </a>
+                  <div class="collapse" id="ui-basic">
+                    <ul class="nav flex-column sub-menu">
+                      <li class="nav-item">
+                        <a class="nav-link text-light" href="#">
+                          Manage products</a
+                        >
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link text-light" href="#">
+                          Add products</a
+                        >
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1"
+                    href="#"
+                  >
+                    <i class="fa-solid fa-signal"></i>
+                    <span>Analytics</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <!-- Dashboard content -->
+          </div>
+        </div>
+        <!-- end dashboard section  -->
+        <!-- Desctop body Design -->
+        <!-- body color -->
+        <div class="col-10 dashboard-bg-color p-0 m-0 sticky-top">
+          <div class="header-Dashboard-style py-2">
+            <div class="row">
+              <div class="col-6 px-5">
+                <form class="d-flex" role="search">
+                  <input
+                    class="form-control me-2"
+                    type="search"
+                    placeholder="Search"
+                    aria-label="Search"
+                  />
+                  <button
+                    class="btn btn-outline-secondary rounded-4"
+                    type="submit"
+                  >
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </button>
+                </form>
+              </div>
+              <div class="col-6">
+                <div class="d-flex justify-content-end">
+                  <div class="dropdown pe-4">
+                    <button
+                      class="btn btn-secondary dropdown-toggle"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                      <li><a class="dropdown-item" href="#">Logout</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="container Dashboard-contaner">
+            <!-- body Header -->
+            <div class="my-3 fw-bold">
+              <h1>Seller Dashboard</h1>
+            </div>
+
+            <!-- body four (4) content -->
+            <div class="row d-flex justify-content-evenly">
+              <!-- Total Sales -->
+              <div
+                class="col-2 mx-1 d-flex flex-column align-items-center justify-content-center bg-light rounded-4"
+              >
+                <p class="fs-4 fw-bold mt-3">
+                  <i class="fa-solid fa-dollar-sign"></i><span> num</span>
+                </p>
+                <p>Total Sales</p>
+              </div>
+              <!-- Orders Today -->
+              <div
+                class="col-2 mx-1 d-flex flex-column align-items-center justify-content-center bg-light rounded-4"
+              >
+                <p class="fs-4 fw-bold mt-3">
+                  <i class="fa-solid fa-cart-shopping"></i>
+                  <span> num</span>
+                </p>
+                <p>Orders Today</p>
+              </div>
+              <!-- Active Customers -->
+              <div
+                class="col-2 mx-1 d-flex flex-column align-items-center justify-content-center bg-light rounded-4"
+              >
+                <p class="fs-4 fw-bold mt-3">
+                  <i class="fa-solid fa-user"></i> <span> num</span>
+                </p>
+                <p>Active Customers</p>
+              </div>
+              <!--Inventory Alerts  -->
+              <div
+                class="col-2 mx-1 d-flex flex-column align-items-center justify-content-center bg-light rounded-4"
+              >
+                <p class="fs-4 fw-bold mt-3">
+                  <i class="fa-solid fa-circle-exclamation"></i>
+                  <span> num</span>
+                </p>
+                <p>Inventory Alerts</p>
+              </div>
+            </div>
+            <!-- End body four (4) content -->
+
+            <!-- body two (2) content -->
+            <div class="row d-flex justify-content-evenly my-5">
+              <div class="col-6">
+                <div
+                  class="row d-flex justify-content-between bg-light rounded-2"
+                >
+                  <h5 class="fw-bold">Top Selling Products</h5>
+                  <table class="table table-hover bg-light">
+                    <tr>
+                      <td></td>
+                      <td>Product</td>
+                      <td class="text-end">Quantity (units)</td>
+                    </tr>
+                    <tr>
+                      <td><i class="fa-solid fa-basket-shopping"></i></td>
+                      <td>Product-A</td>
+                      <td class="text-end">350 units</td>
+                    </tr>
+                  </table>
+                </div>
+                <!-- Low Stock Products -->
+                <div
+                  class="row d-flex justify-content-between bg-light rounded-2 my-5"
+                >
+                  <h5 class="fw-bold">Low Stock Products</h5>
+                  <table class="table table-hover bg-light">
+                    <tr>
+                      <td></td>
+                      <td>Product</td>
+                      <td class="text-end">
+                        <i class="fa-solid fa-sort-down"></i>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><i class="fa-solid fa-arrow-trend-down"></i></td>
+                      <td>Product-A</td>
+                      <td class="text-end">350 units</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+              <div class="col-4">
+                <!-- Recent Orders -->
+                <div
+                  class="row d-flex justify-content-between bg-light rounded-2"
+                >
+                  <h5 class="fw-bold">Recent Orders</h5>
+                  <table class="table table-hover bg-light">
+                    <tr>
+                      <td>Order ID</td>
+                      <td>Customer</td>
+                      <td class="text-end">Total</td>
+                    </tr>
+                    <tr>
+                      <td>#123</td>
+                      <td>Altex Brown</td>
+                      <td class="text-end">
+                        <span>999</span> <i class="fa-solid fa-dollar-sign"></i>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <!-- Low Stock -->
+                <div
+                  class="row d-flex justify-content-between bg-light rounded-2 my-5"
+                >
+                  <table class="table table-hover bg-light mt-1">
+                    <tr>
+                      <td>Low Stock</td>
+                      <td class="text-end">Restock</td>
+                    </tr>
+                    <tr>
+                      <td>Product X</td>
+                      <td class="text-end">
+                        <span>num</span> <i class="fa-solid fa-dollar-sign"></i>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <!-- Restock -->
+                <div
+                  class="row d-flex justify-content-between bg-light rounded-2 my-5"
+                >
+                  <table class="table table-hover bg-light mt-1">
+                    <tr>
+                      <td>Low Stock</td>
+                      <td class="text-end">Restock</td>
+                    </tr>
+                    <tr>
+                      <td>Product X</td>
+                      <td class="text-end">
+                        <button class="btn btn-outline-secondary">
+                          Restock
+                        </button>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--  End Desctop body Design -->
+      </div>
+    </div>
+
+    <!--End Desctop Design -->
+
+    <!-- Mobile Design -->
+    <div class="dashboard-item-mobile">
+      <nav
+        class="navbar navbar-expand-lg bg-body-tertiary dashboard-Mobile-style fixed-top"
+      >
+        <div class="container-fluid">
+          <div class="row w-100">
+            <!-- Logo Img -->
+            <div class="col-3">
+              <a href="#" class="d-flex align-items-end">
+                <img src="logo.png" class="img-fluid" alt="" />
+              </a>
+            </div>
+            <!-- search bar for mobile -->
+            <div class="col-7 d-flex align-items-center justify-content-center">
+              <form class="d-flex" role="search">
+                <input
+                  class="form-control me-2"
+                  type="search"
+                  placeholder="Search"
+                  aria-label="Search"
+                />
+                <button
+                  class="btn btn-outline-secondary rounded-4"
+                  type="submit"
+                >
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+              </form>
+            </div>
+            <!-- End search bar for mobile -->
+
+            <!-- button for the drop down list -->
+            <div class="col-2 d-flex align-items-center">
+              <button
+                class="col-1 border-0 navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+                style="outline: none; box-shadow: none"
+              >
+                <!-- bar icon -->
+                <i class="fa-solid fa-bars fa-2x dashboard-icon-style me-2"></i>
+              </button>
+            </div>
+            <!-- button for the drop down list -->
+
+            <!-- dropdownlist Mobile -->
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1"
+                    aria-current="page"
+                    href="#"
+                    ><i class="fa-solid fa-gear dashboard-icon-style me-1"></i>
+                    Dashboard</a
+                  >
+                </li>
+
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1"
+                    href="#"
+                  >
+                    <i class="fa-solid fa-boxes-packing me-1"></i>
+                    <span>Orders</span>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1"
+                    data-bs-toggle="collapse"
+                    href="#ui-basic"
+                    aria-expanded="false"
+                    aria-controls="ui-basic"
+                  >
+                    <i class="fa-solid fa-tags me-1"></i>
+                    <span class="menu-title">Products </span>
+                    <i class="menu-arrow"></i>
+                  </a>
+                  <div class="collapse" id="ui-basic">
+                    <ul class="nav flex-column sub-menu">
+                      <li class="nav-item">
+                        <a class="nav-link text-light" href="#">
+                          Manage products</a
+                        >
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link text-light" href="#">
+                          Add products</a
+                        >
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1"
+                    href="#"
+                  >
+                    <i class="fa-solid fa-signal"></i>
+                    <span>Analytics</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link dashboard-active" href="#">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <!-- dropdownlist Mobile -->
+          </div>
+        </div>
+      </nav>
+      <!--   Mobile body Design -->
+      <div
+        class="dashboard-bg-color mobile-layout w-100"
+        style="padding-top: 70px"
+      >
+        <div class="container Dashboard-contaner">
+          <!-- body Header -->
+          <div class="mt-5">
+            <div class="mt-3 fw-bold">
+              <h1 class="mt-5 fw-bold">Seller Dashboard</h1>
+            </div>
+          </div>
+
+          <!-- Mobile body four (2) content -->
+          <div class="row d-flex justify-content-evenly">
+            <!-- Total Sales -->
+            <div
+              class="col-4 mx-1 my-3 d-flex flex-column align-items-center justify-content-center bg-light rounded-4"
+            >
+              <p class="fs-4 fw-bold mt-3">
+                <i class="fa-solid fa-dollar-sign"></i><span> num</span>
+              </p>
+              <p>Total Sales</p>
+            </div>
+            <!-- Orders Today -->
+            <div
+              class="col-4 mx-1 my-3 d-flex flex-column align-items-center justify-content-center bg-light rounded-4"
+            >
+              <p class="fs-4 fw-bold mt-3">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span> num</span>
+              </p>
+              <p>Orders Today</p>
+            </div>
+            <!-- Active Customers -->
+            <div
+              class="col-4 mx-1 my-3 d-flex flex-column align-items-center justify-content-center bg-light rounded-4"
+            >
+              <p class="fs-4 fw-bold mt-3">
+                <i class="fa-solid fa-user"></i> <span> num</span>
+              </p>
+              <p class="mx-auto">Active Customers</p>
+            </div>
+            <!--Inventory Alerts  -->
+            <div
+              class="col-4 mx-1 my-3 d-flex flex-column align-items-center justify-content-center bg-light rounded-4"
+            >
+              <p class="fs-4 fw-bold mt-3">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span> num</span>
+              </p>
+              <p>Inventory Alerts</p>
+            </div>
+          </div>
+          <!-- End Mobile body four (2) content -->
+
+          <!--  Mobile body two (1) content -->
+          <div class="row d-flex justify-content-evenly my-5">
+            <div class="col-10">
+              <div
+                class="row d-flex justify-content-between bg-light rounded-2"
+              >
+                <h5 class="fw-bold">Top Selling Products</h5>
+                <table class="table table-hover bg-light">
+                  <tr>
+                    <td></td>
+                    <td>Product</td>
+                    <td class="text-end">Quantity (units)</td>
+                  </tr>
+                  <tr>
+                    <td><i class="fa-solid fa-basket-shopping"></i></td>
+                    <td>Product-A</td>
+                    <td class="text-end">350 units</td>
+                  </tr>
+                </table>
+              </div>
+              <!-- Low Stock Products -->
+              <div
+                class="row d-flex justify-content-between bg-light rounded-2 my-5"
+              >
+                <h5 class="fw-bold">Low Stock Products</h5>
+                <table class="table table-hover bg-light">
+                  <tr>
+                    <td></td>
+                    <td>Product</td>
+                    <td class="text-end">
+                      <i class="fa-solid fa-sort-down"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><i class="fa-solid fa-arrow-trend-down"></i></td>
+                    <td>Product-A</td>
+                    <td class="text-end">350 units</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div class="col-10">
+              <!-- Recent Orders -->
+              <div
+                class="row d-flex justify-content-between bg-light rounded-2"
+              >
+                <h5 class="fw-bold">Recent Orders</h5>
+                <table class="table table-hover bg-light">
+                  <tr>
+                    <td>Order ID</td>
+                    <td>Customer</td>
+                    <td class="text-end">Total</td>
+                  </tr>
+                  <tr>
+                    <td>#123</td>
+                    <td>Altex Brown</td>
+                    <td class="text-end">
+                      <span>999</span> <i class="fa-solid fa-dollar-sign"></i>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <!-- Low Stock -->
+              <div
+                class="row d-flex justify-content-between bg-light rounded-2 my-5"
+              >
+                <table class="table table-hover bg-light mt-1">
+                  <tr>
+                    <td>Low Stock</td>
+                    <td class="text-end">Restock</td>
+                  </tr>
+                  <tr>
+                    <td>Product X</td>
+                    <td class="text-end">
+                      <span>num</span> <i class="fa-solid fa-dollar-sign"></i>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <!-- Restock -->
+              <div
+                class="row d-flex justify-content-between bg-light rounded-2 my-5"
+              >
+                <table class="table table-hover bg-light mt-1">
+                  <tr>
+                    <td>Low Stock</td>
+                    <td class="text-end">Restock</td>
+                  </tr>
+                  <tr>
+                    <td>Product X</td>
+                    <td class="text-end">
+                      <button class="btn btn-outline-secondary">Restock</button>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!-- End  Mobile body two (1) content -->
+        </div>
+      </div>
+      <!--  End Mobile body Design -->
+    </div>
+    <!-- End Mobile Design -->
+  </body>
+</html>

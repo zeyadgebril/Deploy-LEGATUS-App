@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seller Account Management</title>
+    <link rel="icon" href="./images/web icon.png" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <!-- access control -->
+    <script type="module" src="./Sign/Initialize.js"></script>
+
+    <!-- nav -->
+    <link rel="stylesheet" href="./nav.css" />
+    <script src="./navFoterManager.js" type="module"></script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --SwampTime-color: #002f5f;
+        --primary-color: #dae5ef;
+        --secondry-color: #002f5f;
+        --dark-color: #001f3f;
+      }
+
+      body {
+        background-image: linear-gradient(135deg, #dae5ef 0%, #ffffff 100%);
+        height: 100%;
+      }
+
+      .btn-submit {
+        background-color: var(--SwampTime-color);
+        border: none;
+        color: white;
+      }
+
+      .btn-secondary {
+        background-color: var(--SwampTime-color);
+        border: none;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background-color: var(--dark-color);
+        color: white;
+      }
+
+      .seller-name {
+        color: var(--SwampTime-color);
+      }
+
+      .online-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background-color: #28a745;
+        border-radius: 50%;
+        margin-left: 5px;
+      }
+
+      .navbar {
+        background-color: var(--SwampTime-color) !important;
+      }
+
+      .card-header {
+        background-color: var(--SwampTime-color) !important;
+        color: white !important;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      special-footer {
+        flex-shrink: 0;
+        margin-top: auto;
+      }
+    </style>
+  </head>
+
+  <body>
+    <special-nav></special-nav>
+
+    <div class="container mt-4">
+      <div class="row justify-content-between align-items-center g-3">
+        <!-- User Info Card -->
+        <div class="col-12 col-md-6 col-lg-5">
+          <div class="card shadow-sm rounded-4">
+            <div class="card-body">
+              <h4 class="seller-name fw-bold mb-1" id="sellerName">
+                Loading...
+              </h4>
+              <p class="mb-0">
+                <span id="sellerEmail">Loading...</span>
+                <span class="online-indicator"></span>
+                <small class="text-muted">Online</small>
+              </p>
+              <p id="storeName" class="text-muted mb-0">Store: Loading...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="col-12 col-md-6 col-lg-4">
+          <div
+            class="d-flex flex-column flex-md-row gap-2 justify-content-md-end"
+          >
+            <a
+              href="./Seller DashBoard/SellerDashboard.html"
+              class="btn btn-secondary rounded-pill"
+            >
+              <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container mt-4">
+      <div class="row">
+        <div class="col-12">
+          <!-- Account Management Form -->
+          <div id="accountForm" class="card shadow-sm rounded-4">
+            <div class="card-header rounded-top-4">
+              <h5 class="mb-0">Manage Account</h5>
+            </div>
+            <div class="card-body">
+              <form id="updateAccountForm">
+                <div class="mb-3">
+                  <label for="fullName" class="form-label">Full name</label>
+                  <input
+                    type="text"
+                    class="form-control rounded-pill"
+                    id="fullName"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input
+                    type="email"
+                    class="form-control rounded-pill"
+                    id="email"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label for="storeName" class="form-label">Store Name</label>
+                  <input
+                    type="text"
+                    class="form-control rounded-pill"
+                    id="storeNameInput"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label for="password" class="form-label">New Password</label>
+                  <div class="position-relative">
+                    <input
+                      type="password"
+                      class="form-control rounded-pill"
+                      id="password"
+                    />
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label for="currentPassword" class="form-label"
+                    >Current Password <span class="text-danger">*</span></label
+                  >
+                  <div class="position-relative">
+                    <input
+                      type="password"
+                      class="form-control rounded-pill"
+                      id="currentPassword"
+                      required
+                    />
+                  </div>
+                  <div class="form-text">
+                    Required to verify your identity before making changes.
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                  <a
+                    href="./Seller DashBoard/SellerDashboard.html"
+                    class="btn btn-secondary rounded-pill"
+                    >Cancel</a
+                  >
+                  <button type="submit" class="btn btn-submit rounded-pill">
+                    Update Account
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { FormValidator } from "./Sign/Validation.js";
+      import { UserManager } from "./Sign/UserManager.js";
+      import { StorageManager } from "./Sign/StorageManager.js";
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        try {
+          // Initialize the account management
+          initializeAccountManagement();
+        } catch (error) {
+          console.error("Error initializing account management:", error);
+          alert(
+            "Failed to load account management. Please try refreshing the page."
+          );
+          window.location.href = "./Sign/Sign.html";
+        }
+      });
+
+      function initializeAccountManagement() {
+        try {
+          console.log("Starting account management initialization...");
+
+          // Get current seller info
+          const currentUser = UserManager.getCurrentUser();
+          console.log(
+            "Current user retrieved:",
+            currentUser ? "Found user" : "No user found"
+          );
+
+          if (!currentUser) {
+            // If no user is logged in, redirect to login page
+            console.warn("No current user found, redirecting to Sign.html");
+            window.location.href = "./Sign/Sign.html";
+            return;
+          }
+
+          // Check if the user is a seller
+          if (currentUser.role !== "seller") {
+            console.warn(
+              "Non-seller trying to access seller account management"
+            );
+            window.location.href = "./index.html";
+            return;
+          }
+
+          // Load seller information to display
+          loadSellerInfo(currentUser);
+          console.log("Seller info loaded successfully");
+
+          // Initialize account form with validator
+          const validator = new FormValidator();
+          setupAccountForm(validator);
+          console.log("Account form initialized successfully");
+        } catch (error) {
+          console.error("Error in account management initialization:", error);
+          alert("Failed to initialize account management. Please try again.");
+          window.location.href = "./index.html";
+        }
+      }
+
+      function loadSellerInfo(user) {
+        try {
+          const nameElement = document.getElementById("sellerName");
+          const emailElement = document.getElementById("sellerEmail");
+          const storeElement = document.getElementById("storeName");
+
+          if (nameElement) nameElement.textContent = user.name || "N/A";
+          if (emailElement) emailElement.textContent = user.email || "N/A";
+          if (storeElement)
+            storeElement.textContent = `Store: ${user.store || "N/A"}`;
+
+          // Also load values into the form
+          document.getElementById("fullName").value = user.name || "";
+          document.getElementById("email").value = user.email || "";
+          document.getElementById("storeNameInput").value = user.store || "";
+
+          // Clear password fields for security
+          document.getElementById("password").value = "";
+          document.getElementById("currentPassword").value = "";
+        } catch (error) {
+          console.error("Error loading seller info:", error);
+        }
+      }
+
+      function setupAccountForm(validator) {
+        const updateAccountForm = document.getElementById("updateAccountForm");
+
+        if (updateAccountForm) {
+          updateAccountForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            // Get current user
+            const currentUser = UserManager.getCurrentUser();
+            if (!currentUser) {
+              alert("No user logged in");
+              return;
+            }
+
+            // Get form fields
+            const nameField = document.getElementById("fullName");
+            const emailField = document.getElementById("email");
+            const storeNameField = document.getElementById("storeNameInput");
+            const passwordField = document.getElementById("password");
+            const currentPasswordField =
+              document.getElementById("currentPassword");
+
+            // First, verify the current password
+            const currentPasswordValue = currentPasswordField.value.trim();
+            if (!currentPasswordValue) {
+              alert("Please enter your current password to make changes");
+              currentPasswordField.classList.add("is-invalid");
+              return;
+            }
+
+            // Verify that the current password is correct
+            if (currentPasswordValue !== currentUser.password) {
+              alert("Current password is incorrect");
+              currentPasswordField.classList.add("is-invalid");
+              return;
+            } else {
+              currentPasswordField.classList.remove("is-invalid");
+              currentPasswordField.classList.add("is-valid");
+            }
+
+            // Initialize validation flags
+            let isNameValid = true;
+            let isEmailValid = true;
+            let isStoreNameValid = true;
+            let isPasswordValid = true;
+            let errorMessage = "";
+            let isFormChanged = false;
+
+            // Create updated user object with current values
+            const updatedUser = { ...currentUser };
+
+            // Name validation
+            if (nameField.value.trim() !== currentUser.name) {
+              isFormChanged = true;
+              const name = nameField.value.trim();
+              if (name.length < 3) {
+                isNameValid = false;
+                errorMessage += "Name must be at least 3 characters.\n";
+                nameField.classList.add("is-invalid");
+              } else if (name.length > 50) {
+                isNameValid = false;
+                errorMessage += "Name must be less than 50 characters.\n";
+                nameField.classList.add("is-invalid");
+              } else {
+                nameField.classList.remove("is-invalid");
+                nameField.classList.add("is-valid");
+                updatedUser.name = name;
+              }
+            }
+
+            // Email validation
+            if (emailField.value.trim() !== currentUser.email) {
+              isFormChanged = true;
+              const email = emailField.value.trim();
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              if (!emailRegex.test(email)) {
+                isEmailValid = false;
+                errorMessage += "Please enter a valid email address.\n";
+                emailField.classList.add("is-invalid");
+              } else {
+                emailField.classList.remove("is-invalid");
+                emailField.classList.add("is-valid");
+                updatedUser.email = email;
+              }
+            }
+
+            // Store name validation
+            if (storeNameField.value.trim() !== currentUser.store) {
+              isFormChanged = true;
+              const storeName = storeNameField.value.trim();
+              if (storeName.length < 2) {
+                isStoreNameValid = false;
+                errorMessage += "Store name must be at least 2 characters.\n";
+                storeNameField.classList.add("is-invalid");
+              } else {
+                storeNameField.classList.remove("is-invalid");
+                storeNameField.classList.add("is-valid");
+                updatedUser.store = storeName;
+              }
+            }
+
+            // Password validation
+            if (passwordField.value.trim() !== "") {
+              isFormChanged = true;
+              const password = passwordField.value.trim();
+              if (password.length < 6) {
+                isPasswordValid = false;
+                errorMessage += "New password must be at least 6 characters.\n";
+                passwordField.classList.add("is-invalid");
+              } else {
+                passwordField.classList.remove("is-invalid");
+                passwordField.classList.add("is-valid");
+                updatedUser.password = password;
+              }
+            }
+
+            // Check if any changes were made
+            if (!isFormChanged) {
+              alert("No changes were made to your account information.");
+              return;
+            }
+
+            // Display error message if validation failed
+            if (
+              !isNameValid ||
+              !isEmailValid ||
+              !isStoreNameValid ||
+              !isPasswordValid
+            ) {
+              alert(errorMessage);
+              return;
+            }
+
+            // Only proceed if all validations pass
+            try {
+              // Update user in localStorage
+              const users = StorageManager.load("users") || [];
+              const userIndex = users.findIndex((u) => u.id === currentUser.id);
+
+              if (userIndex !== -1) {
+                users[userIndex] = updatedUser;
+                StorageManager.save("users", users);
+
+                // Update current user in localStorage
+                StorageManager.save("currentUser", updatedUser);
+
+                // Show success message
+                alert("Account updated successfully!");
+
+                // Clear validation classes
+                nameField.classList.remove("is-valid", "is-invalid");
+                emailField.classList.remove("is-valid", "is-invalid");
+                storeNameField.classList.remove("is-valid", "is-invalid");
+                passwordField.classList.remove("is-valid", "is-invalid");
+                currentPasswordField.classList.remove("is-valid", "is-invalid");
+
+                // Reset password fields
+                passwordField.value = "";
+                currentPasswordField.value = "";
+
+                // Update displayed user info
+                loadSellerInfo(updatedUser);
+
+                // Redirect back to dashboard
+                setTimeout(() => {
+                  window.location.href =
+                    "./Seller DashBoard/SellerDashboard.html";
+                }, 1500);
+              } else {
+                throw new Error("User not found in database");
+              }
+            } catch (error) {
+              console.error("Error updating account:", error);
+              alert("Failed to update account. Please try again.");
+            }
+          });
+        }
+      }
+    </script>
+    <special-footer></special-footer>
+  </body>
+</html>

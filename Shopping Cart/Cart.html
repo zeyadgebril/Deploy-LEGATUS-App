@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shopping Cart</title>
+    <link rel="icon" href="../images/web icon.png" />
+
+    <link rel="stylesheet" href="./css/Cart.css" />
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7"
+      crossorigin="anonymous"
+    />
+
+    <!-- FontAwesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <!--FontAwesome  -->
+
+    <!-- nav -->
+    <link rel="stylesheet" href="../nav.css" />
+    <script src="../navFoterManager.js" type="module"></script>
+
+    <style>
+      /* Custom styles to enhance the cart layout with rgb(14, 53, 103) as base color */
+      :root {
+        --primary-color: rgb(14, 53, 103);
+        --primary-light: rgb(234, 240, 248);
+        --primary-medium: rgb(168, 189, 218);
+        --primary-dark: rgb(10, 40, 77);
+        --accent-color: rgb(245, 158, 11);
+        --text-dark: rgb(30, 41, 59);
+        --text-medium: rgb(71, 85, 105);
+        --text-light: rgb(148, 163, 184);
+        --success-color: rgb(48, 127, 165);
+        --danger-color: rgb(220, 38, 38);
+        --white: rgb(255, 255, 255);
+      }
+
+      body {
+        background-color: var(--primary-light);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--text-dark);
+      }
+
+      .cart-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(14, 53, 103, 0.12);
+        background-color: var(--white);
+      }
+
+      .cart-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(14, 53, 103, 0.1);
+        background-color: rgba(14, 53, 103, 0.03);
+      }
+
+      .cart-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0;
+      }
+
+      .continue-shopping-btn {
+        transition: all 0.3s ease;
+        border-radius: 50px;
+        padding: 0.5rem 1.25rem;
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+      }
+
+      .continue-shopping-btn:hover {
+        background-color: var(--primary-color);
+        color: var(--white);
+        border-color: var(--primary-color);
+      }
+
+      .table-header {
+        background-color: rgba(14, 53, 103, 0.05);
+        border-radius: 8px;
+      }
+
+      .product-image {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        border-radius: 6px;
+        border: 1px solid rgba(14, 53, 103, 0.1);
+      }
+
+      .product-title {
+        font-weight: 500;
+        color: var(--primary-color);
+        margin-bottom: 0.25rem;
+      }
+
+      .product-variant {
+        font-size: 0.85rem;
+        color: var(--text-medium);
+      }
+
+      .quantity-control {
+        border-radius: 50px;
+        border: 1px solid rgba(14, 53, 103, 0.2);
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .quantity-btn {
+        background: none;
+        border: none;
+        color: var(--primary-color);
+        padding: 0.25rem 0.75rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .quantity-btn:hover {
+        color: var(--primary-dark);
+        background-color: rgba(14, 53, 103, 0.05);
+      }
+
+      .quantity-input {
+        border: none;
+        width: 40px;
+        text-align: center;
+        font-weight: 500;
+        background: transparent;
+        color: var(--primary-color);
+      }
+
+      .price {
+        font-weight: 500;
+        color: var(--primary-color);
+      }
+
+      .remove-item {
+        color: var(--danger-color);
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .remove-item:hover {
+        color: rgb(185, 28, 28);
+      }
+
+      .cart-footer {
+        border-radius: 12px;
+        background-color: rgba(14, 53, 103, 0.05);
+        padding: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      .shipping-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+      }
+
+      .form-check-label {
+        margin-left: 0.5rem;
+        font-weight: 400;
+        color: var(--text-dark);
+      }
+
+      .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+
+      .total-section {
+        background-color: var(--white);
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 5px rgba(14, 53, 103, 0.1);
+        border: 1px solid rgba(14, 53, 103, 0.08);
+      }
+
+      .checkout-btn {
+        border-radius: 50px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+
+      .checkout-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(14, 53, 103, 0.3);
+        background-color: var(--primary-dark);
+      }
+
+      .empty-cart-message {
+        text-align: center;
+        padding: 3rem 0;
+        color: var(--text-medium);
+      }
+
+      .empty-cart-message i {
+        color: var(--primary-medium);
+      }
+
+      /* Mobile styles */
+      .cart-item-mobile .card {
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(14, 53, 103, 0.1);
+        border: 1px solid rgba(14, 53, 103, 0.08);
+      }
+
+      .mobile-product-image {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+      }
+
+      .mobile-product-info {
+        padding: 1rem;
+      }
+
+      .mobile-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+      }
+
+      /* Animation for quantity changes */
+      @keyframes highlight {
+        0% {
+          background-color: transparent;
+        }
+        50% {
+          background-color: rgba(14, 53, 103, 0.15);
+        }
+        100% {
+          background-color: transparent;
+        }
+      }
+
+      .quantity-changed {
+        animation: highlight 1s ease;
+      }
+
+      /* Table styles */
+      .table {
+        color: var(--text-dark);
+      }
+
+      .table-hover tbody tr:hover {
+        background-color: rgba(14, 53, 103, 0.03);
+      }
+
+      /* Text colors */
+      .text-success {
+        color: var(--success-color) !important;
+      }
+
+      .text-danger {
+        color: var(--danger-color) !important;
+      }
+
+      .text-black-50 {
+        color: var(--text-medium) !important;
+      }
+
+      /* Shipping section */
+      .shipping-options {
+        border: 1px solid rgba(14, 53, 103, 0.08);
+      }
+    </style>
+    <script type="module">
+      import { LocalStorageManager, CartRenderer } from "./js/cart.js";
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const storageManager = new LocalStorageManager();
+        const cartRenderer = new CartRenderer(storageManager);
+        const productCart = localStorage.getItem("Cart");
+
+        cartRenderer.renderCartItems();
+
+        const shippingModes = document.querySelectorAll(".shipping-mode");
+        shippingModes.forEach((mode) => {
+          mode.addEventListener("change", () => {
+            cartRenderer.updateCartTotals();
+          });
+
+          // Go back button in history
+          document.querySelector(".goBack").addEventListener("click", () => {
+            window.location.href = "../productCatalog.html";
+          });
+        });
+
+        // Go to the checkout page
+        document.querySelector(".CheckOut").addEventListener("click", () => {
+          const currentUser = storageManager.getCurrentUser();
+          const cartData = storageManager.getProducts();
+
+          // Filter cart items for the current user
+          const userCartItems = cartData.filter(
+            (item) => item.userId === currentUser?.id
+          );
+
+          if (userCartItems.length > 0) {
+            // Create checkout data with all products
+            const checkoutData = {
+              userId: currentUser.id,
+              products: userCartItems.map((item) => ({
+                id: item.product.id,
+                name: item.product.name,
+                price: item.product.price,
+                quantity: item.product.quantity_in_cart,
+                image: item.product.image,
+                sellerId: item.product.sellerId,
+                totalPrice:
+                  parseFloat(item.product.price.split(" ")[0]) *
+                  item.product.quantity_in_cart,
+              })),
+            };
+
+            storageManager.setProductToCheckCart(checkoutData);
+
+            // Redirect to checkout page
+            window.location.href = "../checkout.html";
+          } else {
+            alert("Your cart is empty. Please add items before checkout.");
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <special-nav></special-nav>
+    <!-- Main Cart Container -->
+    <div class="container cart-container">
+      <!-- Header -->
+      <div
+        class="cart-header d-flex flex-column flex-md-row justify-content-between align-items-center"
+      >
+        <div class="d-flex align-items-center mb-3 mb-md-0">
+          <h1 class="cart-title">Your Shopping Cart</h1>
+        </div>
+        <button class="btn continue-shopping-btn goBack">
+          <i class="fa-solid fa-arrow-left me-2"></i>Continue Shopping
+        </button>
+      </div>
+
+      <!-- Warning message container -->
+      <div class="warning-max px-4"></div>
+
+      <!-- Desktop Table (shown above 768px) -->
+      <div class="cart-item-desktop px-4 py-3">
+        <table class="table table-hover align-middle">
+          <thead class="table-header">
+            <tr>
+              <th class="text-uppercase text-black-50">Product</th>
+              <th class="text-uppercase text-black-50 text-center">Price</th>
+              <th class="text-uppercase text-black-50 text-center">Quantity</th>
+              <th class="text-uppercase text-black-50 text-center">Total</th>
+              <th class="text-uppercase text-black-50 text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="cart-table-body">
+            <!-- Cart items will be dynamically inserted here -->
+            <tr
+              class="empty-cart-message"
+              id="empty-cart-desktop"
+              style="display: none"
+            >
+              <td colspan="5">
+                <div class="text-center py-5">
+                  <i class="fas fa-shopping-cart fa-3x mb-3 text-muted"></i>
+                  <h4>Your cart is empty</h4>
+                  <p class="text-muted">
+                    Add items to your cart to see them here
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile List (shown below 768px) -->
+      <div class="cart-item-mobile px-4 py-3">
+        <div id="cart-mobile-list">
+          <!-- Cart items will be dynamically inserted here -->
+          <div
+            class="empty-cart-message"
+            id="empty-cart-mobile"
+            style="display: none"
+          >
+            <i class="fas fa-shopping-cart fa-3x mb-3 text-muted"></i>
+            <h4>Your cart is empty</h4>
+            <p class="text-muted">Add items to your cart to see them here</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer of Cart Page -->
+      <div class="cart-footer">
+        <div class="row">
+          <!-- Shipping mode selection -->
+          <div class="col-12 col-lg-7 mb-4 mb-lg-0">
+            <h2 class="shipping-title"></h2>
+          </div>
+
+          <!-- Order summary -->
+          <div class="col-12 col-lg-5">
+            <div class="total-section">
+              <h2 class="shipping-title">Order Summary</h2>
+
+              <!-- Subtotal -->
+              <div class="d-flex justify-content-between mb-2">
+                <p class="text-black-50 text-uppercase mb-0">Subtotal:</p>
+                <span class="fw-bold subtotal-amount">0.00 $</span>
+              </div>
+
+              <!-- Divider -->
+              <hr class="my-3" />
+
+              <!-- Total -->
+              <div class="d-flex justify-content-between mb-4">
+                <p class="text-black-50 text-uppercase fs-5 mb-0">Total:</p>
+                <span class="fw-bold fs-4 grand-total-amount">0.00 $</span>
+              </div>
+
+              <!-- Checkout button -->
+              <button class="btn w-100 checkout-btn CheckOut">
+                <i class="fas fa-lock me-2 text-light"></i>
+                <span class="text-light">PROCEED TO CHECKOUT</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <special-footer></special-footer>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

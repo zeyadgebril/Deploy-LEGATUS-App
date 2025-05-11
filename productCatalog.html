@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shop</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+
+    <!-- remix icon -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet"/>
+     <!-- remix icon -->
+
+      <!-- FontAwesome -->
+       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+       <!--FontAwesome  -->
+
+       <!-- Nav css -->
+        <link rel="stylesheet" href="nav.css">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root{
+          --filter_color : #002f5f;
+          --card_color : #002f5f;
+          --nav_color : #002f5f;
+        }
+        
+        .accordion{
+          --bs-accordion-btn-bg: var(--filter_color);
+          --bs-accordion-color: #000000;
+          --bs-accordion-bg: var(--filter_color);
+          --bs-accordion-transition: var(--filter_color);
+          --bs-accordion-active-bg: var(--filter_color);
+          --bs-accordion-btn-focus-box-shadow:none;
+          --bs-accordion-border-color:none;
+          --bs--accordion-active-color:#000000;
+          --bs-accordion-btn-color :#ffffff;
+          --bs-accordion-btn-padding-y: 10px;
+          --bs-accordion-btn-padding-x:10px
+          
+        }
+        .accordion-button:after { 
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'><path fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/></svg>") !important;
+        }
+
+
+        .banner_img{
+          width: 100%;
+          height: 400px;
+          background-image: url(images/1.jpg);
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          position: relative;
+          z-index: 1; 
+        }
+        .banner_img::before{
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 47, 95, 0.5); /* Use rgba for transparency */
+            backdrop-filter: blur(4px);
+        }
+        
+        .carousel-inner{
+          z-index: 1; 
+        }
+        .carousel-item{
+          width: 100%;
+          position: relative;
+
+        }
+        .carsl_img{
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: top;
+        }
+         .carousel-item::before{
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 48, 95, 0.279); /* Use rgba for transparency */
+          /*   backdrop-filter: blur(4px); */
+        } 
+
+        .watchstxt_bg{
+          height: 80px;
+          background: #002f5f;
+          color: white;
+          
+        }
+        .form-check-label{
+          color:white;
+        }
+        .accordion-button:not(.collapsed) {
+          color: white;
+        }
+        .accordion-button:not(.collapsed)::after {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23212529' stroke-linecap='round' stroke-linejoin='round'%3e%3cpath d='m2 5 6 6 6-6'/%3e%3c/svg%3e")
+        }
+        .filter{
+          background-color: var(--filter_color);
+          min-width: 150px;
+          color: white;
+        }
+        
+        .check_style{
+          border: 1px solid  !important;
+          box-shadow: none !important;
+        }
+        .check_style:checked{
+          background-color: #1165ba ;
+          
+        }
+        .radio_style{
+          border: 1px solid black !important;
+          box-shadow: none !important;
+          accent-color: #232323 !important;
+        }
+        .radio_style:checked{
+          background-color: #1165ba ;
+          
+        }
+       
+        #watch_img{
+          transition: all 1s;
+          object-fit: contain;
+          aspect-ratio: 1/1;
+           transform: rotate(-90deg); 
+        }
+        .card{
+          width: 18rem;
+          align-items: center;
+          border: none;
+          transition: all 1s;
+        }
+        .card:hover{
+          cursor: pointer;
+          background-color: #002f5f;
+          color: white;
+        }
+        .card:hover #watch_img{
+            transform: scale(1.2) translateY(-10px) rotate(0deg);
+        }
+
+        /* Fixes for horizontal scroll */
+        html, body {
+          overflow-x: hidden;
+        }
+        .row.flex-nowrap {
+          flex-wrap: wrap !important;
+        }
+        
+
+        /* Mobile filter toggle styles */
+        .filter-toggle {
+          display: none;
+          background-color: var(--filter_color);
+          color: white;
+          border: none;
+          padding: 10px 15px;
+          border-radius: 5px;
+          margin-bottom: 15px;
+        }
+        
+        @media (max-width: 992px) {
+          .filter-toggle {
+            display: block;
+          }
+          .filter-col {
+            display: none;
+          }
+          .filter-col.show {
+            display: block;
+            margin-bottom: 20px;
+          }
+          .products {
+            width: 100%;
+          }
+        }
+    </style>
+  </head>
+  <body>
+     <!-- Top Bar -->
+  <div class="top-bar py-1" style="background-color: #d6e7ff;">
+    <div class="container d-flex justify-content-center">
+      <div>Fast & Secure Shopping | Professional Packaging</div>
+    </div>
+  </div>
+  
+  <special-nav></special-nav>
+
+    <!-- Start Banner -->
+      <div id="carouselExampleAutoplaying" class="carousel slide fixed-caruosel p-0 m-0" data-bs-ride="carousel" >
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+          <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3" aria-label="Slide 4"></button>
+        </div>
+        <div class="carousel-inner ">
+          <div class="carousel-item active">
+            <img src="images/4.png" class="carsl_img d-block w-100" alt="...">
+          </div>
+          <div class="carousel-item">
+            <img src="images/20.png" class="carsl_img d-block w-100" alt="...">
+          </div>
+          <div class="carousel-item">
+            <img src="images/21.png" class="carsl_img d-block w-100" alt="...">
+          </div>
+          <div class="carousel-item">
+            <img src="images/24.png" class="carsl_img d-block w-100" alt="...">
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+     <!-- End Banner -->
+
+     <!-- Start Product Catalog -->
+      <div class="container-fluid p-0">
+        <div class="container-fluid d-flex align-items-center justify-content-center watchstxt_bg position-sticky top-0 mb-4 z-1">
+          <h2 class="h1 text-center">Legatus Watches</h2>
+        </div>
+        
+        <div class="container-fluid px-4">
+          <!-- Filter Toggle Button (visible only on mobile) -->
+          <button class="filter-toggle" type="button" id="filterToggle">
+            <i class="ri-filter-line me-2"></i> Filter Options
+          </button>
+          
+          <div class="row mx-0">
+            <!-- Start Filter Column -->
+            <div class="filter-col col-lg-2 p-0" id="filterColumn">
+              <div class="filter rounded-3 p-2">
+                <div class="accordion" id="accordionPanelsStayOpenExample">
+                  <div class="accordion-item">
+                    <h2 class="accordion-header">
+                      <button class="accordion-button fw-medium fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                        Category
+                      </button>
+                    </h2>
+                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+                      <div class="accordion-body">
+                        <div class="form-check">
+                          <input class="form-check-input radio_style" type="radio" name="radioDefault" id="radioDefault2" checked value="All">
+                          <label class="form-check-label" for="radioDefault2">
+                            All
+                          </label>
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input radio_style" type="radio" name="radioDefault" id="radioDefault1" value="male">
+                          <label class="form-check-label" for="radioDefault1">
+                            Men
+                          </label>
+                        </div>
+                        <div class="form-check ">
+                          <input class="form-check-input radio_style" type="radio" name="radioDefault" id="radioDefault1" value="female">
+                          <label class="form-check-label" for="radioDefault1">
+                            Women
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="accordion-item mt-3">
+                    <h2 class="accordion-header">
+                      <button class="accordion-button fw-medium fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
+                        Brand
+                      </button>
+                    </h2>
+                    <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show">
+                      <div class="accordion-body">
+                        <div class="form-check mt-2">
+                          <input class="form-check-input check_style" type="checkbox" value="Rolex" id="checkRolex" >
+                          <label class="form-check-label" for="checkRolex">
+                            Rolex
+                          </label>
+                        </div>
+                        <div class="form-check mt-2">
+                          <input class="form-check-input check_style" type="checkbox" value="Rado" id="checkRado">
+                          <label class="form-check-label" for="checkRado">
+                            Rado
+                          </label>
+                        </div>
+                        <div class="form-check mt-2">
+                          <input class="form-check-input check_style" type="checkbox" value="Casio" id="checkCasio">
+                          <label class="form-check-label" for="checkCasio">
+                            Casio 
+                          </label>
+                        </div>
+                        <div class="form-check mt-2">
+                          <input class="form-check-input check_style" type="checkbox" value="Montblanc" id="checkMontbalnc">
+                          <label class="form-check-label" for="checkMontbalnc">
+                            Montblanc 
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+            <!-- End Filter Column -->
+
+            <!-- Start Products -->
+            <div id="productwrapere" class="products  col-lg-10 d-flex justify-content-center p-0">
+              <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 gap-3 p-0 ms-3 m-0 w-100  justify-content-center  justify-content-lg-start" id="cardswrapper">
+                  <!-- Product cards will go here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+     <!-- End Product Catalog -->
+<!-- Footer -->
+<special-footer></special-footer>
+
+      <script src="navFoterManager.js" type="module"></script>
+      <script src="Products Catalog.js" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+    
+    <script>
+      // Toggle filter visibility on mobile
+      document.getElementById('filterToggle').addEventListener('click', function() {
+        const filterColumn = document.getElementById('filterColumn');
+        filterColumn.classList.toggle('show');
+        
+        // Change icon based on state
+        const icon = this.querySelector('i');
+        if (filterColumn.classList.contains('show')) {
+          icon.classList.remove('ri-filter-line');
+          icon.classList.add('ri-close-line');
+        } else {
+          icon.classList.remove('ri-close-line');
+          icon.classList.add('ri-filter-line');
+        }
+      });
+    </script>
+  </body>
+</html>

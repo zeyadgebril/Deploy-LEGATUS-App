@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Us</title>
+    <link rel="icon" href="./images/web icon.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <!-- FontAwesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <!--FontAwesome  -->
+    <!-- Nav css -->
+    <link rel="stylesheet" href="nav.css" />
+    <script src="navFoterManager.js" type="module"></script>
+    <style>
+      :root {
+        --nav_color: #002f5f;
+      }
+      body {
+        background-color: #dae5ef;
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      .main-content {
+        padding: 40px;
+        flex: 1;
+      }
+
+      .form-control,
+      .btn {
+        border-radius: 4px;
+      }
+      .btn {
+        background-color: #3d5a8a;
+        border-color: #1a1a2e;
+        color: #fff;
+      }
+      .btn:hover {
+        background-color: #002f5f;
+        border-color: #0f3460;
+        color: #fff;
+      }
+      .header {
+        margin-bottom: 30px;
+      }
+      .alert {
+        display: none;
+      }
+
+      /* Navbar Styles */
+
+      /* Footer Styles */
+
+      /* Top Bar Styles */
+      .top-bar {
+        background-color: #dae5ef;
+        color: #002f5f;
+        font-size: 0.9rem;
+        padding: 0.3rem 0;
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 768px) {
+        .main-content {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Bar -->
+    <div class="top-bar py-1">
+      <div class="container d-flex justify-content-center">
+        <div>Fast & Secure Shopping | Professional Packaging</div>
+      </div>
+    </div>
+
+    <!-- Navbar -->
+    <special-nav></special-nav>
+    <div
+      class="container-fluid p-4"
+      style="background: linear-gradient(135deg, #002f5f, #3d5a8a)"
+    >
+      <h1 class="text-center text-white mb-4 fw-bold mb-0">Contact Us</h1>
+
+      <p
+        class="text-white mx-auto text-center mb-4"
+        style="max-width: 700px; font-size: 1rem"
+      >
+        Have a question, suggestion, or need help with your order? We're here to
+        assist you. Just fill out the form below, and our support team will get
+        back to you as soon as possible.
+      </p>
+    </div>
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="card p-4" style="max-width: 600px; margin: auto">
+        <form id="contactForm">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              placeholder="Your Name"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              placeholder="you@example.com"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="phone"
+              placeholder="01012345678"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="comments" class="form-label">Comments</label>
+            <textarea
+              class="form-control"
+              id="comments"
+              rows="4"
+              placeholder="Enter your message..."
+              required
+            ></textarea>
+          </div>
+          <button type="submit" class="btn w-100">
+            <i class="bi bi-send-fill"></i> Send Message
+          </button>
+        </form>
+
+        <!-- Success Message -->
+        <div class="alert alert-success mt-3" role="alert">
+          Your message has been sent successfully!
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <special-footer></special-footer>
+
+    <script>
+      document
+        .getElementById("contactForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const name = document.getElementById("name").value;
+          const email = document.getElementById("email").value;
+          const phone = document.getElementById("phone").value;
+          const comments = document.getElementById("comments").value;
+
+          const customerServiceData = { name, email, phone, comments };
+
+          let customerServiceList =
+            JSON.parse(localStorage.getItem("customerServiceList")) || [];
+          customerServiceList.push(customerServiceData);
+          localStorage.setItem(
+            "customerServiceList",
+            JSON.stringify(customerServiceList)
+          );
+
+          document.getElementById("contactForm").reset();
+
+          document.querySelector(".alert").style.display = "block";
+
+          setTimeout(() => {
+            document.querySelector(".alert").style.display = "none";
+          }, 5000);
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

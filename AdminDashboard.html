@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard for Customer</title>
+    <link rel="icon" href="./images/web icon.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <!-- Import access control -->
+    <script type="module" src="Sign/Initialize.js"></script>
+    <style>
+      body {
+        background-color: #f5f7f6;
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .sidebar {
+        width: 190px;
+        background-color: #002f5f;
+        color: #fff;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        font-size: 1 rem;
+        align-items: start;
+      }
+      .sidebar .logo {
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+      }
+      .sidebar .logo img {
+        width: 140px;
+      }
+      .sidebar a {
+        color: #bdc3c7;
+        text-decoration: none;
+        padding: 15px 20px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: background-color 0.3s;
+      }
+      .sidebar a.active,
+      .sidebar a:hover {
+        background-color: #112235;
+        color: #fff;
+      }
+      .main-content {
+        margin-left: 190px;
+        padding: 30px;
+      }
+      .navbar {
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .search-input {
+        max-width: 400px;
+      }
+      .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+      table {
+        background-color: #ffffff;
+        border-radius: 10px;
+        overflow: hidden;
+        width: 100%;
+      }
+      th {
+        background-color: #1a1a2e;
+        color: #fff;
+      }
+      td,
+      th {
+        vertical-align: middle;
+        text-align: center;
+        word-wrap: break-word;
+      }
+      .btn {
+        border-radius: 20px;
+        padding: 5px 20px;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+      }
+      .btn-reset {
+        background-color: #0f3460;
+        color: white;
+      }
+      .btn-delete {
+        background-color: #d63031;
+        color: white;
+      }
+      .btn-reset:hover {
+        background-color: #1271d1;
+      }
+      .btn-delete:hover {
+        background-color: #f24848;
+      }
+      .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: nowrap;
+      }
+      th:nth-child(1),
+      td:nth-child(1) {
+        width: 10%;
+      }
+      th:nth-child(2),
+      td:nth-child(2) {
+        width: 30%;
+      }
+      th:nth-child(3),
+      td:nth-child(3) {
+        width: 30%;
+      }
+      th:nth-child(4),
+      td:nth-child(4) {
+        width: 30%;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo text-center py-4">
+        <h1
+          class="d-flex align-items-center justify-content-center gap-2 text-white fs-3 m-0"
+        >
+          <i class="bi bi-shield-lock"></i>
+          <span>Admin</span>
+        </h1>
+      </div>
+
+      <a href="#" class="active"><i class="bi bi-person"></i> Customer</a>
+      <a href="AdminSellerDashboard.html"><i class="bi bi-shop"></i> Seller</a>
+      <a href="AdminProductDashboard.html"
+        ><i class="bi bi-bag"></i> Products</a
+      >
+      <a href="AdminDashboardCustomerService.html"
+        ><i class="bi bi-people"></i> Customer Service</a
+      >
+      <a href="index.html"><i class="bi bi-house-door-fill"></i> Home Page</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Top Navbar -->
+      <nav class="navbar navbar-light mb-4">
+        <div class="container-fluid">
+          <div class="input-group search-input">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input
+              id="searchInput"
+              class="form-control"
+              type="search"
+              placeholder="Search by Name"
+              aria-label="Search"
+            />
+          </div>
+        </div>
+      </nav>
+
+      <h2 class="mb-4">Customers Data</h2>
+
+      <div class="card p-4">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle table-sm">
+            <thead>
+              <tr>
+                <th style="width: 5%">ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customerTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      if (!localStorage.getItem("users")) {
+        localStorage.setItem("users", JSON.stringify([]));
+      }
+
+      function renderCustomers() {
+        const users = JSON.parse(localStorage.getItem("users")) || [];
+        const customers = users.filter((user) => user.role === "customer");
+
+        const tbody = document.getElementById("customerTableBody");
+        tbody.innerHTML = "";
+
+        if (customers.length === 0) {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+          <td colspan="4" style="text-align:center; color: gray;">No Data Available</td>
+        `;
+          tbody.appendChild(row);
+          return;
+        }
+
+        customers.forEach((cust, idx) => {
+          cust.displayId = String(idx + 1).padStart(3, "0");
+
+          const row = document.createElement("tr");
+          row.innerHTML = `
+          <td>${cust.displayId}</td>
+          <td>${cust.name || ""}</td>
+          <td>${cust.email || ""}</td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn btn-reset" onclick="resetCustomerPassword('${
+                cust.id
+              }')">
+                <i class="bi bi-arrow-clockwise" ></i> Reset Password
+              </button>
+              <button class="btn btn-delete" onclick="deleteCustomer('${
+                cust.id
+              }')">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+            </div>
+          </td>
+        `;
+          tbody.appendChild(row);
+        });
+      }
+
+      function deleteCustomer(id) {
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        users = users.filter(
+          (user) =>
+            !(user.role === "customer" && String(user.id) === String(id))
+        );
+        localStorage.setItem("users", JSON.stringify(users));
+        renderCustomers();
+      }
+
+      function resetCustomerPassword(id) {
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        const customerIndex = users.findIndex(
+          (user) => user.role === "customer" && String(user.id) === String(id)
+        );
+        if (customerIndex !== -1) {
+          const newPassword = prompt("Please enter the new password:");
+          if (newPassword && newPassword.trim() !== "") {
+            users[customerIndex].password = newPassword.trim();
+            localStorage.setItem("users", JSON.stringify(users));
+            renderCustomers();
+            alert("Password has been successfully updated.");
+          } else {
+            alert("No new password entered.");
+          }
+        } else {
+          alert("Customer not found.");
+        }
+      }
+
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", function () {
+          const filter = this.value.trim();
+          document.querySelectorAll("#customerTableBody tr").forEach((row) => {
+            const idText = row
+              .querySelector("td:nth-child(2)")
+              .textContent.trim();
+            row.style.display = idText.includes(filter) ? "" : "none";
+          });
+        });
+
+      window.onload = renderCustomers;
+    </script>
+  </body>
+</html>

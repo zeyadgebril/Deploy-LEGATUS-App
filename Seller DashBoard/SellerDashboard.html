@@ -1,0 +1,3060 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seller Dashboard</title>
+    <link rel="icon" href="../images/web icon.png">
+    <!-- access control -->
+    <script type="module" src="../Sign/Initialize.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="./css/all.min.css" />
+    <link rel="stylesheet" href="./css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./css/dashboard.css" />
+    <!-- Latest Font Awesome CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+
+    <!-- JS -->
+    <script src="./js/all.min.js"></script>
+  
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+
+<script>
+  window.addEventListener("DOMContentLoaded", async function () {
+  const { LocalStorageManager } = await import("./js/product.js");
+  const storageManager = new LocalStorageManager();
+
+
+  
+
+  let hasReloaded = false;
+
+function runOnceReload() {
+    if (!hasReloaded) {
+        hasReloaded = true;
+        window.location.reload();
+    }
+}
+
+
+  // Modify your existing showPage function to call showDashboardPage when dashboard is shown
+  function showPage(pageToShow, pages) {
+    if (!pages) return;
+
+    Object.values(pages).forEach((page) => {
+      if (page) page.classList.add("d-none");
+    });
+
+    if (pages[pageToShow.toLowerCase()]) {
+      pages[pageToShow.toLowerCase()].classList.remove("d-none");
+
+      // If dashboard is shown, initialize the chart
+      if (pageToShow.toLowerCase() === "dashboard") {
+        window.location.reload();
+        showDashboardPage();
+      }
+      // If orders page is shown, load orders
+      else if (pageToShow.toLowerCase() === "orders") {
+        showOrdersPage();
+      }
+    }
+  }
+
+  // Function to load and display orders
+  function loadOrders(searchTerm = '') {
+    // Get orders from localStorage and filter by sellerId
+    const allOrders = JSON.parse(localStorage.getItem('Orders')) || [];
+    const orders = allOrders.filter(order => order.sellerId === sellerId);
+    
+    // Process orders to update product stock - this should happen every time we load orders
+    processOrdersForStock(orders);
+    // Filter if search term exists
+    const filteredOrders = searchTerm 
+        ? orders.filter(order => order.orderId.toLowerCase().includes(searchTerm.toLowerCase()))
+        : [...orders];
+    
+    // Render orders
+    renderOrders(filteredOrders, searchTerm);
+}
+
+function processOrdersForStock(orders) {
+    const storageManager = new LocalStorageManager();
+    const products = storageManager.getProducts();
+    let productsUpdated = false;
+    const processedOrderIds = JSON.parse(localStorage.getItem('processedOrderIds')) || [];
+    orders.forEach(order => {
+        if (!processedOrderIds.includes(order.orderId)) {
+            order.products.forEach(orderProduct => {
+
+                const productData = orderProduct.product || orderProduct;
+                const productId = productData.id;
+                
+                // Ensure we have a valid product ID
+                if (productId) {
+                    const productIndex = products.findIndex(p => p.id === productId);
+                    if (productIndex !== -1) {
+                        // Get quantity - try multiple possible fields
+                        const quantity = productData.quantity_in_cart || 
+                        productData.quantity || 
+                        1; 
+                        const currentStock = Number(products[productIndex].stock) || 0;
+                        const orderedQuantity = Number(quantity) || 0;
+                        
+                        products[productIndex].stock = Math.max(0, currentStock - orderedQuantity);
+                        productsUpdated = true;
+                    }
+                }
+            });
+            
+            // Mark this order as processed by adding its ID to the list
+            processedOrderIds.push(order.orderId);
+        }
+    });
+
+    if (productsUpdated) {
+        storageManager.setProducts(products);
+    }
+    
+    // Save updated list of processed order IDs
+    localStorage.setItem('processedOrderIds', JSON.stringify(processedOrderIds));
+}
+
+function renderOrders(ordersToDisplay, searchTerm = '') {
+    // Desktop View 
+    const desktopTable = document.querySelector('.orders-page table');
+    if (desktopTable) {
+        const tbody = desktopTable.querySelector('tbody') || desktopTable;
+        tbody.innerHTML = ordersToDisplay.length ? '' : `
+            <tr>
+                <td colspan="7" class="text-center py-4">
+                    <i class="fas fa-box-open fa-2x text-muted mb-2"></i>
+                    <p>${searchTerm ? `No orders found for "${searchTerm}"` : 'No orders found'}</p>
+                    ${searchTerm ? `<button class="btn btn-outline-primary mt-2 clear-order-search-btn">Clear Search</button>` : ''}
+                </td>
+            </tr>
+        `;
+
+        ordersToDisplay.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate)).forEach(order => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${order.orderId}</td>
+                <td>${new Date(order.orderDate).toLocaleDateString()}</td>
+                <td>${order.userId}</td>
+                <td>
+                    <select class="form-select form-select-sm status-select" data-order-id="${order.orderId}">
+                        <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
+                        <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                        <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                    </select>
+                </td>
+                <td>
+                    <span class="badge bg-success">
+                         Paid
+                     </span>
+                </td>
+                <td>$<strong class="text-end money ${getStatusColorClass(order.status)}">${order.totalAmount || order.totalAmmount || '0.00'}</strong></td>                <td class="text-center">
+                    <button class="btn btn-sm btn-outline-secondary view-details-btn" data-order-id="${order.orderId}">
+                        <i class="fas fa-eye"></i> Details
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // Mobile View - Modified to be more like desktop
+    const mobileOrdersList = document.getElementById('mobileOrdersList');
+    if (mobileOrdersList) {
+        mobileOrdersList.innerHTML = '';
+        
+        if (!ordersToDisplay.length) {
+            const noOrdersMsg = document.createElement('div');
+            noOrdersMsg.className = 'text-center py-4 list-group-item';
+            noOrdersMsg.innerHTML = `
+                <i class="fas fa-box-open fa-2x text-muted mb-2"></i>
+                <p>${searchTerm ? `No orders found for "${searchTerm}"` : 'No orders found'}</p>
+                ${searchTerm ? `<button class="btn btn-outline-primary mt-2 clear-order-search-btn">Clear Search</button>` : ''}
+            `;
+            mobileOrdersList.appendChild(noOrdersMsg);
+            return;
+        }
+
+        ordersToDisplay.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate)).forEach(order => {
+            const orderItem = document.createElement('div');
+            orderItem.className = 'list-group-item list-group-item-action';
+            orderItem.setAttribute('data-order-id', order.orderId);
+            
+            // Main row - always visible
+            orderItem.innerHTML = `
+                <div class="row align-items-center">
+                    <div class="col-12 col-md-2 mb-2 mb-md-0">
+                        <strong class="d-md-none">Order ID: </strong>
+                        <span>${order.orderId}</span>
+                    </div>
+                    <div class="col-6 col-md-2 mb-2 mb-md-0">
+                        <strong class="d-md-none">Date: </strong>
+                        <span>${new Date(order.orderDate).toLocaleDateString()}</span>
+                    </div>
+                    <div class="col-6 col-md-2 mb-2 mb-md-0">
+                        <strong class="d-md-none">Customer: </strong>
+                        <span>${order.userId}</span>
+                    </div>
+                    <div class="col-6 col-md-2 mb-2 mb-md-0">
+                        <strong class="d-md-none">Status: </strong>
+                        <span class="badge ${getStatusBadgeClass(order.status)}">
+                            ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                        </span>
+                    </div>
+                    <div class="col-6 col-md-1 mb-2 mb-md-0">
+                        <strong class="d-md-none">Payment: </strong>
+                        <span class="badge text-bg-success">
+                           PAID
+                        </span>
+                    </div>
+                    <div class="col-6 col-md-2 text-md-end mb-2 mb-md-0">
+                        <strong class="d-md-none">Total: </strong>
+                        <span class="money ${getStatusColorClass(order.status)}">$${order.totalAmount || order.totalAmmount || '0.00'}</span>
+                    </div>
+                    <div class="col-6 col-md-1 text-md-center">
+                        <button class="btn btn-sm btn-outline-secondary view-details-btn" data-order-id="${order.orderId}">
+                            <i class="fas fa-eye"></i> <span class="d-none d-md-inline">Details</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Collapsible section for mobile (order details) -->
+                <div class="row mt-2 d-md-none">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between">
+                            <select class="form-select form-select-sm status-select w-100" data-order-id="${order.orderId}">
+                                <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
+                                <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                                <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            mobileOrdersList.appendChild(orderItem);
+        });
+    }
+
+
+  }
+
+
+document.querySelector("#HomePage").addEventListener("click", () => {
+    window.location.href = "../productCatalog.html";
+});
+document.querySelector("#HomePageMObile").addEventListener("click", () => {
+     window.location.href = "../productCatalog.html";
+ });
+ document.querySelector("#ManageAccountMObile").addEventListener("click", () => {
+     window.location.href = "../SellerManageAccount.html";
+ });
+ document.querySelector("#ManageAccount").addEventListener("click", () => {
+     window.location.href = "../SellerManageAccount.html";
+ });
+ function showOrderDetails(orderId) {
+    const orders = JSON.parse(localStorage.getItem('Orders')) || [];
+    const order = orders.find(o => o.orderId === orderId);
+    
+    if (!order) {
+        return;
+    }
+
+    // Create product details - modified to match your actual structure
+    const productDetails = order.products.map(item => {
+        // Get quantity - using the direct quantity property
+        const quantity = item.quantity || 1;
+        
+        // Handle price (remove $ sign and convert to number)
+        const priceStr = item.price?.toString() || '0';
+        const price = parseFloat(priceStr.replace(/[^\d.]/g, '')) || 0;
+        
+        return {
+            id: item.id || '',
+            name: item.name || 'Unknown Product',
+            brand: item.brand || '',
+            price: price,
+            image: item.image || 'https://via.placeholder.com/50',
+            quantity: quantity, 
+            total: (price * quantity).toFixed(2)
+        };
+    });
+
+    // Calculate order summary
+    const orderSummary = {
+        subtotal: parseFloat(order.subtotal || '0').toFixed(2),
+        shipping: parseFloat(order.shipping || '0').toFixed(2),
+        total: parseFloat(order.totalAmount || '0').toFixed(2)
+    };
+
+    // Create modal HTML (updated to show quantity_in_cart)
+    const modalHTML = `
+        <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="orderDetailsModalLabel">Order #${order.orderId}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <p><strong>Order Date:</strong> ${new Date(order.orderDate).toLocaleString()}</p>
+                                <p><strong>Customer ID:</strong> ${order.userId}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Status:</strong> 
+                                    <span class="badge ${getStatusBadgeClass(order.status)}">
+                                        ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                    </span>
+                                </p>
+                                <p><strong>Payment Status:</strong> 
+                                    <span class="badge bg-success">
+                                       Paid
+                                     </span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <h5 class="mb-3">Products</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                        <th>Qty</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${productDetails.map(product => `
+                                        <tr>
+                                            <td><img src="${product.image}" class="img-thumbnail" width="50" alt="${product.name}"></td>
+                                            <td>${product.name}</td>
+                                            <td>$${product.price.toFixed(2)}</td>
+                                            <td>${product.quantity}</td>
+                                            <td>$${product.total}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6 offset-md-6">
+                                <h5>Order Summary</h5>
+                                <table class="table">
+                                    <tr>
+                                        <td><strong>Subtotal:</strong></td>
+                                        <td class="text-end">$${orderSummary.subtotal}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Shipping:</strong></td>
+                                        <td class="text-end">$${orderSummary.shipping}</td>
+                                    </tr>
+                                    <tr class="table-active">
+                                        <td><strong>Total:</strong></td>
+                                        <td class="text-end"><strong>$${orderSummary.total}</strong></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Add modal to DOM
+    const modalContainer = document.createElement('div');
+    modalContainer.innerHTML = modalHTML;
+    document.body.appendChild(modalContainer);
+
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
+    modal.show();
+
+    // Remove modal from DOM after it's closed
+    document.getElementById('orderDetailsModal').addEventListener('hidden.bs.modal', function() {
+        modalContainer.remove();
+    });
+}
+
+document.addEventListener('click', function(e) {
+    // Handle view details buttons
+    if (e.target.classList.contains('view-details-btn') || e.target.closest('.view-details-btn')) {
+        const orderId = e.target.getAttribute('data-order-id') || 
+                        e.target.closest('.view-details-btn').getAttribute('data-order-id');
+        showOrderDetails(orderId);
+    }
+    
+    // Handle status changes
+    if (e.target.classList.contains('status-select')) {
+        const orderId = e.target.getAttribute('data-order-id');
+        const newStatus = e.target.value;
+        updateOrderStatus(orderId, newStatus);
+    }
+});
+
+function getStatusBadgeClass(status) {
+    switch(status) {
+        case 'processing': return 'text-bg-warning';
+        case 'shipped': return 'text-bg-success';
+        case 'cancelled': return 'text-bg-danger';
+        default: return 'text-bg-secondary';
+    }
+}
+
+function hasSufficientStock(order) {
+    const storageManager = new LocalStorageManager();
+    const products = storageManager.getProducts();
+    
+    for (const orderProduct of order.products) {
+        const product = products.find(p => p.id === orderProduct.product.id);
+        if (!product || product.stock < orderProduct.quantity_in_cart) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+
+function updateOrderStatus(orderId, newStatus) {
+    const storageManager = new LocalStorageManager();
+    const orders = storageManager.getOrders();
+    const products = storageManager.getProducts();
+    const orderIndex = orders.findIndex(o => o.orderId === orderId && o.sellerId === sellerId);
+    
+    if (orderIndex !== -1) {
+        const order = orders[orderIndex];
+        const previousStatus = order.status;
+        order.status = newStatus;
+        console.log("1");
+        // Handle stock changes based on status changes
+        if (previousStatus === 'cancelled' && newStatus !== 'cancelled') {
+        console.log("2");
+
+            // Order was cancelled and is now being uncancelled - reduce stock
+            if (!order.stockProcessed) {
+        console.log("3");
+
+                order.products.forEach(orderProduct => {
+                    const product = products.find(p => p.id === orderProduct.product.id);
+                    if (product) {
+        console.log("4");
+
+                        const currentStock = Number(product.stock) || 0;
+                        const orderedQuantity = Number(orderProduct.quantity_in_cart) || 0;
+                        product.stock = Math.max(0, currentStock - orderedQuantity);
+                    }
+                });
+                order.stockProcessed = true;
+            }
+        } else if (previousStatus !== 'cancelled' && newStatus === 'cancelled') {
+            // Order is being cancelled - restore stock
+            if (order.stockProcessed) {
+                order.products.forEach(orderProduct => {
+                    const product = products.find(p => p.id === orderProduct.product.id);
+                    if (product) {
+                        const currentStock = Number(product.stock) || 0;
+                        const orderedQuantity = Number(orderProduct.quantity_in_cart) || 0;
+                        product.stock = currentStock + orderedQuantity;
+                    }
+                });
+                order.stockProcessed = false;
+            }
+        }
+        
+        storageManager.setProducts(products);
+        storageManager.saveOrders(orders);
+        updateOrderUI(orderId, newStatus);
+    }
+}
+
+function updateOrderUI(orderId, newStatus) {
+    // Update status dropdown in both views
+    document.querySelectorAll(`select[data-order-id="${orderId}"]`).forEach(select => {
+        select.value = newStatus;
+    });
+    
+    // Update status badges in both views
+    document.querySelectorAll(`[data-order-id="${orderId}"] .badge`).forEach(badge => {
+        badge.className = `badge ${getStatusBadgeClass(newStatus)}`;
+        badge.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+    });
+    
+    // Update total amount color in both views
+    document.querySelectorAll(`[data-order-id="${orderId}"] .money`).forEach(money => {
+        money.className = `money ${getStatusColorClass(newStatus)}`;
+    });
+}
+
+function getStatusColorClass(status) {
+    switch(status) {
+        case 'processing': return 'text-warning';
+        case 'shipped': return 'text-success';
+        case 'cancelled': return 'text-danger';
+        default: return 'text-secondary';
+    }
+}
+
+document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('status-select')) {
+        const orderId = e.target.getAttribute('data-order-id');
+        const newStatus = e.target.value;
+        updateOrderStatus(orderId, newStatus);
+    }
+});
+
+
+function showOrdersPage() {
+    loadOrders();
+  }
+
+  function updateDashboardStats() {
+    const orders = storageManager.getOrders().filter(order => order.sellerId === sellerId);
+    
+    // Calculate total sales (including shipping)
+    const totalSales = orders.reduce((total, order) => {
+        const sellerProducts = order.products.filter(p => p.userId == sellerId);
+        const productsTotal = sellerProducts.reduce((sum, product) => {
+            const price = typeof product.product.price === 'string' 
+                ? parseFloat(product.product.price.replace(/[^0-9.]/g, '')) || 0
+                : product.product.price || 0;
+            return sum + (price * (product.quantity_in_cart || 1));
+        }, 0);
+        return total + productsTotal + (parseFloat(order.shipping || 0) || 0);
+    }, 0);
+    
+
+    
+    // Calculate and update orders today count
+    const today = new Date().toISOString().split('T')[0];
+    const ordersToday = orders.filter(order => 
+        new Date(order.orderDate).toISOString().split('T')[0] === today
+    ).length;
+    
+    document.querySelectorAll('.orders-today-value').forEach(el => {
+        el.textContent = ordersToday;
+    });
+}
+
+  function showDashboardPage() {
+    updateDashboardStats();
+  }
+
+  // Pagination variables
+let currentPage = 1;
+const productsPerPage = 4;
+  //End Pagination variables
+
+  //DOM to get the places where we want to display the data or to get the data from the input field
+  const desktopSearchInput = document.querySelector(
+    '.header-Dashboard-style input[type="search"]'
+  );
+  const mobileSearchInput = document.querySelector(
+    '.mobile-layout input[type="search"]'
+  );
+  const desktopSearchForm = document.querySelector(
+    ".header-Dashboard-style form"
+  );
+  const mobileSearchForm = document.querySelector(".mobile-layout form");
+
+  // Add this function to handle product searching
+  function searchProducts(searchTerm) {
+    const products = storageManager.getProducts();
+    const sellerProducts = products.filter(
+      (p) => p.sellerId === sellerId
+    );
+
+    if (!searchTerm || searchTerm.trim() === "") {
+      // If search is empty, show all products
+      currentPage = 1;
+      loadProducts();
+      return;
+    }
+
+    // Filter products by name (case insensitive)
+    const filteredProducts = sellerProducts.filter((product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    if (filteredProducts.length === 0) {
+      // Show "not found" message
+      showNotFoundMessage(searchTerm);
+    } else {
+      // Display filtered products
+      displaySearchResults(filteredProducts);
+    }
+  }
+
+  // Add this function to show "not found" message
+  function showNotFoundMessage(searchTerm) {
+    // Clear existing content
+    productsTableBody.innerHTML = "";
+    mobileProductsList.innerHTML = "";
+
+    // Hide pagination
+    document.getElementById("desktopPagination").innerHTML = "";
+    document.getElementById("mobilePagination").innerHTML = "";
+
+    // Create "not found" message for desktop
+    const desktopMessage = document.createElement("tr");
+    desktopMessage.innerHTML = `
+    <td colspan="7" class="text-center py-4">
+      <div class="d-flex flex-column align-items-center">
+        <i class="fas fa-search fa-3x mb-3 text-muted"></i>
+        <h4>No products found for "${searchTerm}"</h4>
+        <p class="text-muted">Try a different search term</p>
+        <button class="btn btn-outline-primary mt-2 clear-search-btn">
+          Clear Search
+        </button>
+      </div>
+    </td>
+  `;
+    productsTableBody.appendChild(desktopMessage);
+
+    // Create "not found" message for mobile
+    const mobileMessage = document.createElement("div");
+    mobileMessage.className = "list-group-item text-center py-4";
+    mobileMessage.innerHTML = `
+    <div class="d-flex flex-column align-items-center">
+      <i class="fas fa-search fa-3x mb-3 text-muted"></i>
+      <h4>No products found for "${searchTerm}"</h4>
+      <p class="text-muted">Try a different search term</p>
+      <button class="btn btn-outline-primary mt-2 clear-search-btn">
+        Clear Search
+      </button>
+    </div>
+  `;
+    mobileProductsList.appendChild(mobileMessage);
+
+    // Add event listeners to clear search buttons
+    document.querySelectorAll(".clear-search-btn").forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        desktopSearchInput.value = "";
+        mobileSearchInput.value = "";
+        currentPage = 1;
+        loadProducts();
+      });
+    });
+  }
+
+  // Add this function to display search results
+  function displaySearchResults(filteredProducts) {
+    // Reset to first page when showing search results
+    currentPage = 1;
+
+    // Update pagination controls
+    updatePaginationControls(filteredProducts.length);
+
+    // Clear existing rows
+    productsTableBody.innerHTML = "";
+    mobileProductsList.innerHTML = "";
+
+    // Get paginated results
+    const paginatedResults = paginateProducts(filteredProducts);
+
+    // Add search results to desktop table
+    paginatedResults.forEach((product) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+      <td><img src="${product.image}" class="img-thumbnail" alt="${
+        product.name
+      }" width="50"></td>
+      <td>${product.name}</td>
+      <td>${product.brand}</td>
+      <td>${product.gender}</td>
+      <td>$${product.price.toFixed(2)}</td>
+      <td>
+        <span class="badge ${
+          product.stock > 10
+            ? "bg-success"
+            : product.stock > 0
+            ? "bg-warning text-dark"
+            : "bg-danger"
+        }">
+          ${
+            product.stock > 0
+              ? `In Stock (${product.stock})`
+              : "Out of Stock"
+          }
+        </span>
+      </td>
+      <td class="text-end">
+        <a href="#" class="btn btn-sm btn-outline-primary edit-product-btn" data-id="${
+          product.id
+        }">
+          <i class="fas fa-edit"></i> Edit
+        </a>
+        <a href="#" class="btn btn-sm btn-outline-danger delete-product-btn" data-id="${
+          product.id
+        }">
+          <i class="fas fa-trash"></i> Delete
+        </a>
+      </td>
+    `;
+      productsTableBody.appendChild(row);
+    });
+
+    // Add search results to mobile list
+    paginatedResults.forEach((product) => {
+      const item = document.createElement("div");
+      item.className = "list-group-item";
+      item.innerHTML = `
+      <div class="d-flex align-items-center">
+        <img src="${
+          product.image
+        }" class="img-thumbnail me-3" width="50" alt="${product.name}">
+        <div class="flex-grow-1">
+          <div class="d-flex justify-content-between">
+            <h6 class="mb-1">${product.name}</h6>
+            <small>$${product.price.toFixed(2)}</small>
+          </div>
+          <div class="d-flex justify-content-between">
+            <small class="text-muted">${product.brand}</small>
+            <small class="text-muted">${
+              product.gender 
+            }</small>
+            <span class="badge ${
+              product.stock > 10
+                ? "bg-success"
+                : product.stock > 0
+                ? "bg-warning text-dark"
+                : "bg-danger"
+            }">
+              ${product.stock > 0 ? "In Stock" : "Out of Stock"}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-end mt-2">
+        <a href="#" class="btn btn-sm btn-outline-primary me-1 edit-product-btn-mobile" data-id="${
+          product.id
+        }">
+          <i class="fas fa-edit"></i> Edit
+        </a>
+        <a href="#" class="btn btn-sm btn-outline-danger delete-product-btn-mobile" data-id="${
+          product.id
+        }">
+          <i class="fas fa-trash"></i> Delete
+        </a>
+      </div>
+    `;
+      mobileProductsList.appendChild(item);
+    });
+
+    // Reattach event listeners to edit/delete buttons
+    attachProductButtonListeners();
+  }
+
+  // Add this function to reattach button listeners
+  function attachProductButtonListeners() {
+    document.querySelectorAll(".edit-product-btn").forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        const productId = this.getAttribute("data-id");
+        editProduct(productId);
+      });
+    });
+
+    document.querySelectorAll(".delete-product-btn").forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        const productId = this.getAttribute("data-id");
+        deleteProduct(productId);
+      });
+    });
+
+    document
+      .querySelectorAll(".edit-product-btn-mobile")
+      .forEach((btn) => {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          const productId = this.getAttribute("data-id");
+          editProduct(productId);
+        });
+      });
+
+    document
+      .querySelectorAll(".delete-product-btn-mobile")
+      .forEach((btn) => {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          const productId = this.getAttribute("data-id");
+          deleteProduct(productId);
+        });
+      });
+  }
+
+  //get the data from search bar when search button is clicked
+  if (desktopSearchForm) {
+    desktopSearchForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      searchProducts(desktopSearchInput.value.trim());
+    });
+  }
+  //get the data from search bar when search button is clicked
+  if (mobileSearchForm) {
+    mobileSearchForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      searchProducts(mobileSearchInput.value.trim());
+    });
+  }
+
+  // get the data from input field
+  if (desktopSearchInput) {
+    desktopSearchInput.addEventListener("input", function () {
+      searchProducts(this.value.trim());
+    });
+  }
+
+  // get the data from input field
+  if (mobileSearchInput) {
+    mobileSearchInput.addEventListener("input", function () {
+      searchProducts(this.value.trim());
+    });
+  }
+
+  // Function to paginate for products
+  function paginateProducts(products) {
+    const startIndex = (currentPage - 1) * productsPerPage;
+    const endIndex = startIndex + productsPerPage;
+    return products.slice(startIndex, endIndex);
+  }
+
+  // Function to update pagination controls
+  function updatePaginationControls(totalProducts) {
+    const totalPages = Math.ceil(totalProducts / productsPerPage);
+
+    // Desktop pagination
+    const desktopPagination =
+      document.getElementById("desktopPagination");
+    if (desktopPagination) {
+      desktopPagination.innerHTML = "";
+
+      if (totalPages > 1) {
+        // Previous button
+        desktopPagination.innerHTML += `
+        <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+          <a class="page-link" href="#" data-page="${
+            currentPage - 1
+          }">&laquo;</a>
+        </li>
+      `;
+
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+          desktopPagination.innerHTML += `
+          <li class="page-item ${i === currentPage ? "active" : ""}">
+            <a class="page-link" href="#" data-page="${i}">${i}</a>
+          </li>
+        `;
+        }
+
+        // Next button
+        desktopPagination.innerHTML += `
+        <li class="page-item ${
+          currentPage === totalPages ? "disabled" : ""
+        }">
+          <a class="page-link" href="#" data-page="${
+            currentPage + 1
+          }">&raquo;</a>
+        </li>
+      `;
+      }
+    }
+
+    // Mobile pagination
+    const mobilePagination = document.getElementById("mobilePagination");
+    if (mobilePagination) {
+      mobilePagination.innerHTML = "";
+
+      if (totalPages > 1) {
+        // Previous button
+        mobilePagination.innerHTML += `
+        <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+          <a class="page-link" href="#" data-page="${
+            currentPage - 1
+          }">&laquo;</a>
+        </li>
+      `;
+
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+          mobilePagination.innerHTML += `
+          <li class="page-item ${i === currentPage ? "active" : ""}">
+            <a class="page-link" href="#" data-page="${i}">${i}</a>
+          </li>
+        `;
+        }
+
+        // Next button
+        mobilePagination.innerHTML += `
+        <li class="page-item ${
+          currentPage === totalPages ? "disabled" : ""
+        }">
+          <a class="page-link" href="#" data-page="${
+            currentPage + 1
+          }">&raquo;</a>
+        </li>
+      `;
+      }
+    }
+  }
+
+  // Event delegation for pagination clicks
+// Event delegation for pagination clicks
+document.addEventListener("click", function (e) {
+    // Handle pagination clicks
+    if (e.target.classList.contains("page-link")) {
+        e.preventDefault();
+        const page = parseInt(e.target.getAttribute("data-page"));
+        
+        if (!isNaN(page)) {
+            // Check which pagination was clicked
+            const isOrdersPagination = e.target.closest('#desktopOrdersPagination') || 
+                                     e.target.closest('#mobileOrdersPagination');
+            
+            if (isOrdersPagination) {
+                currentOrdersPage = page;
+                loadOrders(); // Reload orders with new page
+            } else {
+                currentPage = page;
+                loadProducts(); // Handle product pagination
+            }
+        }
+    }
+});
+function searchOrders(searchTerm) {
+  currentOrdersPage = 1; // Reset to first page when searching
+  loadOrders(searchTerm);
+}
+
+  // Initialize page navigation
+  const navLinks = document.querySelectorAll(
+    ".navbar-nav .nav-link:not(.dropdown-item)"
+  );
+  const mobileNavLinks = document.querySelectorAll(
+    "#navbarNavDropdown .nav-link"
+  );
+
+  const mobileNavToggler = document.querySelector(".navbar-toggler");
+  const mobileNavMenu = document.getElementById("navbarNavDropdown");
+
+  const desktopPages = {
+    dashboard: document.querySelector(
+      ".dashboard-item-desktop .dashboard-page"
+    ),
+    orders: document.querySelector(
+      ".dashboard-item-desktop .orders-page"
+    ),
+    products: document.querySelector(
+      ".dashboard-item-desktop .Products-page"
+    ),
+  };
+
+  const mobilePages = {
+    dashboard: document.querySelector(
+      ".dashboard-item-mobile .dashboard-page"
+    ),
+    orders: document.querySelector(".dashboard-item-mobile .orders-page"),
+    products: document.querySelector(
+      ".dashboard-item-mobile .Products-page"
+    ),
+  };
+
+  function initializePages(pages) {
+    Object.values(pages).forEach((page) => {
+      if (page && page !== pages.dashboard) {
+        page.classList.add("d-none");
+      }
+    });
+  }
+
+  initializePages(desktopPages);
+  initializePages(mobilePages);
+
+  function collapseMobileMenu() {
+    if (mobileNavMenu.classList.contains("show")) {
+      const bsCollapse = new bootstrap.Collapse(mobileNavMenu, {
+        toggle: false,
+      });
+      bsCollapse.hide();
+    }
+  }
+
+  navLinks.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      const pageName = this.id || this.textContent.trim();
+      showPage(pageName, desktopPages);
+    });
+  });
+
+  mobileNavLinks.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      const linkText = this.textContent.trim();
+
+      if (linkText.includes("Dashboard"))
+        showPage("dashboard", mobilePages);
+      else if (linkText.includes("Orders")) {
+        showPage("orders", mobilePages);
+        showOrdersPage();
+      }
+      else if (linkText.includes("Products"))
+        showPage("products", mobilePages);
+
+      collapseMobileMenu();
+    });
+  });
+
+  const productSubLinks = document.querySelectorAll(
+    ".sub-menu .nav-link"
+  );
+  productSubLinks.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      showPage("products", desktopPages);
+      showPage("products", mobilePages);
+      collapseMobileMenu();
+    });
+  });
+
+  // Product Management System
+  // Initialize products in local storage if empty
+  storageManager.initializeProducts();
+
+  // Sample seller ID (in a real app, this would come from authentication)
+  let sellerId;
+  const userSellerRole = storageManager.getUserAuthentication();
+  const CurrentUser = storageManager.getCurrentUser();
+  userSellerRole.forEach((user) => {
+    if(CurrentUser.role==user.role&& CurrentUser.id==user.id){
+      sellerId =user.id;
+    }
+  })
+  
+  // For desktop version
+  document.querySelector(".dropdown-item.Logout").addEventListener("click", function(e) {
+    e.preventDefault();
+    storageManager.ClearCurrentUser();
+    window.location.href = "../index.html";
+  });
+
+  // For mobile version
+  document.querySelector(".nav-link .Logout").addEventListener("click", function(e) {
+    e.preventDefault();
+    storageManager.ClearCurrentUser();
+    window.location.href = "../index.html";
+  });
+
+
+  // DOM elements
+  const productsTableBody = document.getElementById("productsTableBody");
+  const mobileProductsList =
+    document.getElementById("mobileProductsList");
+
+  // Image upload handlers
+  document
+    .getElementById("productImageBtn")
+    .addEventListener("click", function () {
+      document.getElementById("productImageUpload").click();
+    });
+
+    document
+  .getElementById("productImageUpload")
+  .addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    if (file) {
+      const allowedTypes = ["image/png", "image/jpeg"];
+      if (!allowedTypes.includes(file.type)) {
+        document.querySelector(".warningCaseNotValid").innerHTML = "Only PNG and JPEG images are allowed.";
+        document.querySelector(".warningCaseNotValid").classList.add("text-danger");
+        e.target.value = "";
+        return;
+      }
+
+      const reader = new FileReader();
+reader.onload = function (e) {
+  const base64Image = e.target.result;
+  document.getElementById("productImage").value = base64Image; // safe to store
+  document.getElementById("previewImage").src = base64Image;
+  document.getElementById("imagePreview").style.display = "block";
+  document.querySelector(".warningCaseNotValid").innerHTML = "";
+};
+reader.readAsDataURL(file);
+
+    }
+  });
+
+  document
+  .getElementById("editProductImageBtn")
+  .addEventListener("click", function () {
+    document.getElementById("editProductImageUpload").click();
+  });
+
+document
+  .getElementById("editProductImageUpload")
+  .addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    if (file) {
+      const validTypes = ["image/jpeg", "image/png"];
+      if (!validTypes.includes(file.type)) {
+        alert("Only PNG and JPEG images are allowed.");
+        e.target.value = ""; // clear invalid file
+        return;
+      }
+
+      const reader = new FileReader();
+        reader.onload = function (e) {
+          document.getElementById("editProductImage").value =
+            e.target.result;
+          document.getElementById("editPreviewImage").src =
+            e.target.result;
+          document.getElementById("editImagePreview").style.display =
+            "block";
+        };
+        reader.readAsDataURL(file);
+
+
+    }
+  });
+
+
+  // Mobile image upload handlers
+  document
+    .getElementById("productImageBtnMobile")
+    .addEventListener("click", function () {
+      document.getElementById("productImageUploadMobile").click();
+    });
+
+    document
+  .getElementById("productImageUploadMobile")
+  .addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    if (file) {
+      const validTypes = ["image/jpeg", "image/png"];
+      const fileType = file.type;
+
+      if (!validTypes.includes(fileType)) {
+        document.querySelector(".warningCaseNotValidMobile").innerHTML = "Only PNG and JPEG images are allowed.";
+        document.querySelector(".warningCaseNotValidMobile").classList.add("text-danger");
+        e.target.value = ""; // Clear the file input
+        return;
+      }
+
+      const reader = new FileReader();
+reader.onload = function (e) {
+  const base64Image = e.target.result;
+  document.getElementById("productImage").value = base64Image; // safe to store
+  document.getElementById("previewImage").src = base64Image;
+  document.getElementById("imagePreview").style.display = "block";
+  document.querySelector(".warningCaseNotValid").innerHTML = "";
+};
+reader.readAsDataURL(file);
+
+
+    }
+  });
+
+
+  document
+  .getElementById("editProductImageBtnMobile")
+  .addEventListener("click", function () {
+    document.getElementById("editProductImageUploadMobile").click();
+  });
+
+document
+  .getElementById("editProductImageUploadMobile")
+  .addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    if (file) {
+      const validTypes = ["image/jpeg", "image/png"];
+      if (!validTypes.includes(file.type)) {
+        alert("Only PNG and JPEG images are allowed.");
+        e.target.value = ""; // clear the invalid file
+        return;
+      }
+
+      const reader = new FileReader();
+        reader.onload = function (e) {
+          document.getElementById("editProductImage").value =
+            e.target.result;
+          document.getElementById("editPreviewImage").src =
+            e.target.result;
+          document.getElementById("editImagePreview").style.display =
+            "block";
+        };
+        reader.readAsDataURL(file);
+
+
+    }
+  });
+
+  // View navigation functions
+  function showProductsListView() {
+    document
+      .querySelectorAll(".products-list-view")
+      .forEach((view) => view.classList.remove("d-none"));
+    document
+      .querySelectorAll(".add-product-view")
+      .forEach((view) => view.classList.add("d-none"));
+    document
+      .querySelectorAll(".edit-product-view")
+      .forEach((view) => view.classList.add("d-none"));
+    loadProducts();
+  }
+
+  function showAddProductView() {
+    document
+      .querySelectorAll(".products-list-view")
+      .forEach((view) => view.classList.add("d-none"));
+    document
+      .querySelectorAll(".add-product-view")
+      .forEach((view) => view.classList.remove("d-none"));
+    document
+      .querySelectorAll(".edit-product-view")
+      .forEach((view) => view.classList.add("d-none"));
+    // Reset form
+    document.getElementById("addProductForm").reset();
+    document.getElementById("imagePreview").style.display = "none";
+  }
+
+  function showEditProductView() {
+    document
+      .querySelectorAll(".products-list-view")
+      .forEach((view) => view.classList.add("d-none"));
+    document
+      .querySelectorAll(".add-product-view")
+      .forEach((view) => view.classList.add("d-none"));
+    document
+      .querySelectorAll(".edit-product-view")
+      .forEach((view) => view.classList.remove("d-none"));
+  }
+
+  // Load products from local storage
+  function loadProducts() {
+    const products = storageManager.getProducts();
+    const sellerProducts = products.filter(
+      (p) => p.sellerId === sellerId
+    );
+    const paginatedProducts = paginateProducts(sellerProducts);
+
+    // Update pagination controls
+    updatePaginationControls(sellerProducts.length);
+
+    // Clear existing rows
+    productsTableBody.innerHTML = "";
+    mobileProductsList.innerHTML = "";
+
+    // Add paginated products to desktop table
+    paginatedProducts.forEach((product) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+      <td><img src="${
+        product.image || "https://via.placeholder.com/50"
+      }" class="img-thumbnail" alt="${product.name}" width="50"></td>
+      <td>${product.name}</td>
+      <td>${product.brand}</td>
+      <td>${product.gender }</td>
+      <td>$${product.price.toFixed(2)}</td>
+      <td>
+        <span class="badge ${
+          product.stock > 10
+            ? "bg-success"
+            : product.stock > 0
+            ? "bg-warning text-dark"
+            : "bg-danger"
+        }">
+          ${
+            product.stock > 0
+              ? `In Stock (${product.stock})`
+              : "Out of Stock"
+          }
+        </span>
+      </td>
+      <td class="text-end">
+        <a href="#" class="btn btn-sm btn-outline-primary edit-product-btn" data-id="${
+          product.id
+        }">
+          <i class="fas fa-edit"></i> Edit
+        </a>
+        <a href="#" class="btn btn-sm btn-outline-danger delete-product-btn" data-id="${
+          product.id
+        }">
+          <i class="fas fa-trash"></i> Delete
+        </a>
+      </td>
+    `;
+      productsTableBody.appendChild(row);
+    });
+
+    // Add paginated products to mobile list
+    paginatedProducts.forEach((product) => {
+      const item = document.createElement("div");
+      item.className = "list-group-item";
+      item.innerHTML = `
+      <div class="d-flex align-items-center">
+        <img src="${
+          product.image || "https://via.placeholder.com/50"
+        }" class="img-thumbnail me-3" width="50" alt="${product.name}">
+        <div class="flex-grow-1">
+          <div class="d-flex justify-content-between">
+            <h6 class="mb-1">${product.name}</h6>
+            <small>$${product.price.toFixed(2)}</small>
+          </div>
+          <div class="d-flex justify-content-between">
+            <small class="text-muted">${product.brand}</small>
+            <small class="text-muted">${
+              product.gender 
+            }</small>
+            <span class="badge ${
+              product.stock > 10
+                ? "bg-success"
+                : product.stock > 0
+                ? "bg-warning text-dark"
+                : "bg-danger"
+            }">
+              ${product.stock > 0 ? "In Stock" : "Out of Stock"}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-end mt-2">
+        <a href="#" class="btn btn-sm btn-outline-primary me-1 edit-product-btn-mobile" data-id="${
+          product.id
+        }">
+          <i class="fas fa-edit"></i> Edit
+        </a>
+        <a href="#" class="btn btn-sm btn-outline-danger delete-product-btn-mobile" data-id="${
+          product.id
+        }">
+          <i class="fas fa-trash"></i> Delete
+        </a>
+      </div>
+    `;
+      mobileProductsList.appendChild(item);
+    });
+
+    document.querySelectorAll(".edit-product-btn").forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        const productId = this.getAttribute("data-id");
+        editProduct(productId);
+      });
+    });
+
+    document.querySelectorAll(".delete-product-btn").forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        const productId = this.getAttribute("data-id");
+        deleteProduct(productId);
+      });
+    });
+
+    document
+      .querySelectorAll(".edit-product-btn-mobile")
+      .forEach((btn) => {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          const productId = this.getAttribute("data-id");
+          editProduct(productId);
+        });
+      });
+
+    document
+      .querySelectorAll(".delete-product-btn-mobile")
+      .forEach((btn) => {
+        btn.addEventListener("click", function (e) {
+          e.preventDefault();
+          const productId = this.getAttribute("data-id");
+          deleteProduct(productId);
+        });
+      });
+  }
+  // Add a new product
+  function addProduct(productData) {
+    storageManager.addProduct(productData);
+    showProductsListView();
+    updateAnalitics();
+  }
+
+  // Edit an existing product
+  function editProduct(productId) {
+    const products = storageManager.getProducts();
+    const product = products.find((p) => p.id === productId);
+
+    if (product) {
+      // Set form values for desktop
+      document.getElementById("editProductId").value = product.id;
+      document.getElementById("editProductName").value = product.name;
+      document.getElementById("editProductBrand").value = product.brand;
+      document.getElementById("editProductGender").value =
+        product.gender || "";
+      document.getElementById("editProductPrice").value = product.price;
+      document.getElementById("editProductStock").value = product.stock;
+      document.getElementById("editProductImage").value =
+        product.image || "";
+      document.getElementById("editProductDescription").value =
+        product.description || "";
+
+      if (product.image) {
+        document.getElementById("editPreviewImage").src = product.image;
+        document.getElementById("editImagePreview").style.display =
+          "block";
+      } else {
+        document.getElementById("editImagePreview").style.display =
+          "none";
+      }
+
+      // Set form values for mobile
+      document.getElementById("editProductIdMobile").value = product.id;
+      document.getElementById("editProductNameMobile").value =
+        product.name;
+      document.getElementById("editProductBrandMobile").value =
+        product.brand;
+      document.getElementById("editProductGenderMobile").value =
+        product.gender || "";
+      document.getElementById("editProductPriceMobile").value =
+        product.price;
+      document.getElementById("editProductStockMobile").value =
+        product.stock;
+      document.getElementById("editProductImageMobile").value =
+        product.image || "";
+      document.getElementById("editProductDescriptionMobile").value =
+        product.description || "";
+
+      if (product.image) {
+        document.getElementById("editPreviewImageMobile").src =
+          product.image;
+        document.getElementById("editImagePreviewMobile").style.display =
+          "block";
+      } else {
+        document.getElementById("editImagePreviewMobile").style.display =
+          "none";
+      }
+
+      showEditProductView();
+    }
+  }
+
+  // Update a product
+  function updateProduct(updatedProduct) {
+    storageManager.updateProduct(updatedProduct);
+    showProductsListView();
+    updateAnalitics();
+  }
+  // Delete a product
+  function deleteProduct(productId) {
+    if (confirm("Are you sure you want to delete this product?")) {
+      storageManager.deleteProduct(productId);
+      loadProducts();
+      updateAnalitics();
+    }
+  }
+  // Event listeners for navigation
+  document
+    .getElementById("addNewProductBtn")
+    .addEventListener("click", function (e) {
+      e.preventDefault();
+      showAddProductView();
+    });
+
+  document
+    .getElementById("addNewProductBtnMobile")
+    .addEventListener("click", function (e) {
+      e.preventDefault();
+      showAddProductView();
+    });
+
+  document.querySelectorAll(".back-to-products-btn").forEach((btn) => {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      showProductsListView();
+    });
+  });
+
+  document
+    .querySelectorAll(".back-to-products-btn-mobile")
+    .forEach((btn) => {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        showProductsListView();
+      });
+    });
+
+  // Form submission handlers
+  document
+    .getElementById("addProductForm")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const newProduct = {
+        id: "#prod-" + Date.now(),
+        name: document.getElementById("productName").value,
+        brand: document.getElementById("productBrand").value,
+        gender: document.getElementById("productGender").value,
+        price: parseFloat(document.getElementById("productPrice").value),
+        stock: parseInt(document.getElementById("productStock").value),
+        image: document.getElementById("productImage").value,
+        description: document.getElementById("productDescription").value,
+        sellerId: sellerId,
+      };
+
+      addProduct(newProduct);
+    });
+
+  document
+    .getElementById("addProductFormMobile")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const newProduct = {
+        id: "#prod-" + Date.now(),
+        name: document.getElementById("productNameMobile").value,
+        brand: document.getElementById("productBrandMobile").value,
+        gender: document.getElementById("productGenderMobile").value,
+        price: parseFloat(
+          document.getElementById("productPriceMobile").value
+        ),
+        stock: parseInt(
+          document.getElementById("productStockMobile").value
+        ),
+        image: document.getElementById("productImageMobile").value,
+        description: document.getElementById("productDescriptionMobile")
+          .value,
+        sellerId: sellerId,
+      };
+
+      addProduct(newProduct);
+    });
+
+  document
+    .getElementById("editProductForm")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const updatedProduct = {
+        id: document.getElementById("editProductId").value,
+        name: document.getElementById("editProductName").value,
+        brand: document.getElementById("editProductBrand").value,
+        gender: document.getElementById("editProductGender").value,
+        price: parseFloat(
+          document.getElementById("editProductPrice").value
+        ),
+        stock: parseInt(
+          document.getElementById("editProductStock").value
+        ),
+        image: document.getElementById("editProductImage").value,
+        description: document.getElementById("editProductDescription")
+          .value,
+        sellerId: sellerId,
+      };
+
+      updateProduct(updatedProduct);
+    });
+
+  document
+    .getElementById("editProductFormMobile")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const updatedProduct = {
+        id: document.getElementById("editProductIdMobile").value,
+        name: document.getElementById("editProductNameMobile").value,
+        brand: document.getElementById("editProductBrandMobile").value,
+        gender: document.getElementById("editProductGenderMobile").value,
+        price: parseFloat(
+          document.getElementById("editProductPriceMobile").value
+        ),
+        stock: parseInt(
+          document.getElementById("editProductStockMobile").value
+        ),
+        image: document.getElementById("editProductImageMobile").value,
+        description: document.getElementById(
+          "editProductDescriptionMobile"
+        ).value,
+        sellerId: sellerId,
+      };
+
+      updateProduct(updatedProduct);
+    });
+
+// Event for the Inventory Alerts (seller-specific)
+function updateInventoryAlerts() {
+    const productsList = storageManager.getProducts();
+    let countInventoryAlerts = 0;
+    
+    productsList.forEach((product) => {
+        if (product.sellerId == sellerId) {
+            const stock = product.stock !== null && product.stock !== undefined ? 
+                         parseInt(product.stock) : 0;
+            if (stock < 10) {
+                countInventoryAlerts++;
+            }
+        }
+    });
+    
+    document.getElementById("Inventory-Alerts").innerHTML = countInventoryAlerts;
+    document.getElementById("mobile-Inventory-Alerts").innerHTML = countInventoryAlerts;
+}
+
+// Event for the Stock Value (seller-specific)
+function updateStockValue() {
+    const productsList = storageManager.getProducts();
+    let ValueStock = 0;
+    
+    productsList.forEach((product) => {
+        if (product.sellerId == sellerId) {
+            const stock = product.stock !== null && product.stock !== undefined ? 
+                         parseInt(product.stock) : 0;
+            const price = parseFloat(product.price) || 0;
+            ValueStock += stock * price;
+        }
+    });
+    
+    document.getElementById("Stock-Value").innerHTML = ValueStock.toFixed(2);
+    document.getElementById("mobile-Stock-Value").innerHTML = ValueStock.toFixed(2);
+}
+
+// Event for Orders Today (seller-specific)
+function updateOrdersToday() {
+
+  const elements = document.querySelectorAll('.orders-today-value');
+
+    const orders = storageManager.getOrders();
+    const today = new Date().toISOString().split('T')[0];
+    let ordersToday = 0;
+    
+    orders.forEach(order => {
+        if (order.sellerId == sellerId && 
+            new Date(order.orderDate).toISOString().split('T')[0] === today) {
+            ordersToday++;
+        }
+    });
+    
+    document.querySelectorAll('.orders-today-value').forEach(el => {
+        el.innerHTML = ordersToday;
+    });
+}
+
+// Event for Total Sales (seller-specific)
+function updateTotalSales() {
+    const orders = storageManager.getOrders() || [];
+    let totalSales = 0;
+    
+    orders.forEach(order => {
+        // Only process orders belonging to this seller
+        if (order.sellerId == sellerId) {
+            // Use the order's totalAmount if available, otherwise calculate from products + shipping
+            if (order.totalAmount) {
+                // Remove any non-numeric characters and convert to number
+                const orderTotal = parseFloat(order.totalAmount.toString().replace(/[^0-9.]/g, '')) || 0;
+                totalSales += orderTotal;
+            } else {
+                // Fallback calculation (similar to your original version)
+                const sellerProductsTotal = order.products.reduce((sum, item) => {
+                    if (item.userId == sellerId) {
+                        const quantity = item.quantity_in_cart || 1;
+                        const priceStr = item.product?.price?.toString() || '0';
+                        const price = parseFloat(priceStr.replace(/[^0-9.]/g, '')) || 0;
+                        return sum + (price * quantity);
+                    }
+                    return sum;
+                }, 0);
+                
+                const shipping = parseFloat(order.shipping?.toString().replace(/[^0-9.]/g, '')) || 0;
+                totalSales += sellerProductsTotal + shipping;
+            }
+        }
+    });
+
+    // Update all elements with the total-sales-value class
+    document.querySelectorAll('.total-sales-value').forEach(el => {
+        el.textContent = totalSales.toFixed(2);
+    });
+    
+}
+
+function createDynamicCharts() {
+    // Get orders and products for the current seller
+    const orders = storageManager.getOrders().filter(order => order.sellerId === sellerId);
+    const products = storageManager.getProducts().filter(product => product.sellerId === sellerId);
+
+    // 1. Monthly Order Status (Desktop)
+    const monthlyCtx = document.getElementById('monthlyWorkChart').getContext('2d');
+    if (monthlyCtx) {
+        // Count order statuses
+        const statusCounts = {
+            processing: 0,
+            shipped: 0,
+            cancelled: 0
+        };
+
+        orders.forEach(order => {
+            if (order.status in statusCounts) {
+                statusCounts[order.status]++;
+            }
+        });
+
+        new Chart(monthlyCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Processing', 'Shipped', 'Cancelled'],
+                datasets: [{
+                    data: [statusCounts.processing, statusCounts.shipped, statusCounts.cancelled],
+                    backgroundColor: [
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(255, 99, 132, 0.8)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: true, text: 'Monthly Order Status' }
+                }
+            }
+        });
+    }
+
+    // 2. Monthly Order Status (Mobile)
+    const mobileMonthlyCtx = document.getElementById('mobileMonthlyWorkChart').getContext('2d');
+    if (mobileMonthlyCtx) {
+        // Count order statuses
+        const statusCounts = {
+            processing: 0,
+            shipped: 0,
+            cancelled: 0
+        };
+
+        orders.forEach(order => {
+            if (order.status in statusCounts) {
+                statusCounts[order.status]++;
+            }
+        });
+
+        new Chart(mobileMonthlyCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Processing', 'Shipped', 'Cancelled'],
+                datasets: [{
+                    data: [statusCounts.processing, statusCounts.shipped, statusCounts.cancelled],
+                    backgroundColor: [
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(255, 99, 132, 0.8)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: true, text: 'Monthly Orders' }
+                }
+            }
+        });
+    }
+
+    // 3. Stock by Gender (Desktop)
+    const stockCtx = document.getElementById('stockByGenderChart').getContext('2d');
+    if (stockCtx) {
+        // Count stock by gender
+        const genderCounts = {
+            male: 0,
+            female: 0,
+        };
+
+        products.forEach(product => {
+            const gender = product.gender ? product.gender.toLowerCase() : 'unspecified';
+            const stock = parseInt(product.stock) || 0;
+            
+            if (gender === 'male') {
+                genderCounts.male += stock;
+            } else if (gender === 'female') {
+                genderCounts.female += stock;
+            }
+        });
+
+        new Chart(stockCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    data: [genderCounts.male, genderCounts.female],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 99, 132, 0.8)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: 'Stock by Gender' }
+                }
+            }
+        });
+    }
+
+    // 4. Stock by Gender (Mobile)
+    const mobileStockCtx = document.getElementById('mobileStockByGenderChart').getContext('2d');
+    if (mobileStockCtx) {
+        // Count stock by gender
+        const genderCounts = {
+            male: 0,
+            female: 0,
+            unspecified: 0
+        };
+
+        products.forEach(product => {
+            const gender = product.gender ? product.gender.toLowerCase() : 'unspecified';
+            const stock = parseInt(product.stock) || 0;
+            
+            if (gender === 'male') {
+                genderCounts.male += stock;
+            } else if (gender === 'female') {
+                genderCounts.female += stock;
+            } else {
+                genderCounts.unspecified += stock;
+            }
+        });
+
+        new Chart(mobileStockCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    data: [genderCounts.male, genderCounts.female, genderCounts.unspecified],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(201, 203, 207, 0.8)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: 'Stock by Gender' }
+                }
+            }
+        });
+    }
+}
+
+// Update all analytics (including dashboard stats)
+function updateAnalitics() {
+    updateInventoryAlerts();
+    updateStockValue();
+    updateOrdersToday();
+    updateTotalSales();
+    createDynamicCharts();
+
+}
+
+
+
+
+// Initial load
+showProductsListView();
+updateAnalitics();
+
+  function hasSufficientStock(productId, requestedQuantity) {
+  const products = storageManager.getProducts();
+  const product = products.find(p => p.id === productId);
+  return product && product.stock >= requestedQuantity;
+}
+
+
+});
+</script>
+
+  </head>
+  <body>
+    <!-- Desktop Design -->
+    <div class="m-0 p-0 dashboard-item-desktop">
+      <div class="row fixed-top">
+        <!-- dashboard section -->
+        <div class="col-2 dashboard-Desctop-style">
+          <div class="d-flex flex-column">
+            <!--Logo Img-->
+            <div class="logo text-center py-4">
+              <h1 class="d-flex align-items-center justify-content-center gap-2 text-white fs-3 m-0">
+                <i class="fa-solid fa-shop"></i>
+                <span>Seller</span>
+              </h1>
+            </div>
+            <!-- <div class="box">
+              <a href="#" class="text-decoration-none d-flex align-items-end"> -->
+                <!-- <img
+                  src="./img/logo.png"
+                  class="img-fluid w-100 mx-auto"
+                  alt=""
+                />  -->
+               <!--  <h1 class="d-flex align-items-center  justify-content-center gap-2 text-white fs-3 m-0">
+                  <i class="bi bi-shield-lock"></i>
+                  <span >Admin</span>
+                </h1>
+              </a>
+            </div> -->
+            <!--End Logo Img-->
+            <!-- Dashboard content -->
+            <div class="mx-2">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1"
+                    aria-current="page"
+                    href="#"
+                    id="Dashboard"
+                    ><i class="fa-solid fa-gear dashboard-icon-style me-1"></i>
+                    Dashboard</a
+                  >
+                </li>
+
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1"
+                    href="#"
+                    id="Orders"
+                  >
+                    <i class="fa-solid fa-boxes-packing me-1"></i>
+                    <span>Orders</span>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1"
+                    data-bs-toggle="collapse"
+                    href="#ui-basic"
+                    aria-expanded="false"
+                    aria-controls="ui-basic"
+                    id="Products"
+                  >
+                    <i class="fa-solid fa-tags me-1"></i>
+                    <span class="menu-title">Products </span>
+                  </a>
+                </li>
+
+
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1"
+                    aria-current="page"
+                    href="#"
+                    id="HomePage"
+                    ><i class="fa-solid fa-house"></i>
+                    Home Page</a
+                  >
+                </li>
+
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1"
+                    aria-current="page"
+                    href="#"
+                    id="ManageAccount"
+                    >
+                    <i class="fa-solid fa-gear"></i>
+                    Manage Account</a
+                  >
+                </li>
+
+              </ul>
+            </div>
+            <!-- Dashboard content -->
+          </div>
+        </div>
+        <!-- end dashboard section  -->
+        <!-- Desktop body Design -->
+        <!-- body color -->
+        <div class="col-10 dashboard-bg-color p-0 m-0 sticky-top">
+          <div class="header-Dashboard-style py-2">
+            <div class="row">
+              <div class="col-8 px-5">
+                <form class="d-flex" role="search">
+                  <input
+                    class="form-control me-2"
+                    type="search"
+                    placeholder="Search"
+                    aria-label="Search"
+                  />
+                  <button
+                    class="btn btn-outline-secondary rounded-4"
+                    type="submit"
+                  >
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </button>
+                </form>
+              </div>
+              <div class="col-4">
+                <div class="d-flex justify-content-end">
+                  <div class="dropdown pe-4">
+                    <button
+                      class="btn btn-primary dropdown-toggle"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                      <li><a class="dropdown-item Logout" href="#" >Logout</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="container Dashboard-contaner">
+            <!-- body Header -->
+            <div class="my-3 fw-bold">
+              <h1>Seller Dashboard</h1>
+            </div>
+
+            <!-- dashboard-body-page -->
+            <div class="dashboard-page">
+              <!-- body four (4) content -->
+              <div class="row d-flex justify-content-evenly">
+                <!-- Total Sales -->
+                <div
+                  class="col-2 mx-1 d-flex flex-column align-items-center justify-content-center bg-light rounded-4 Dashboard-class-hovor"
+                >
+                  <p
+                    class="fs-4 fw-bold mt-3 d-flex justify-content-center align-items-center"
+                  >
+                    <span class="total-sales-value"> 0</span>
+                    <i class="fa-solid fa-dollar-sign"></i>
+                  </p>
+                  <p>Total Sales</p>
+                </div>
+                <!-- Orders Today -->
+                <div
+                  class="col-2 mx-1 d-flex flex-column align-items-center justify-content-center bg-light rounded-4 Dashboard-class-hovor"
+                >
+                  <p
+                    class="fs-4 fw-bold mt-3 d-flex justify-content-center align-items-center"
+                  >
+                    <span class="orders-today-value"> 0</span>
+                    <i class="fa-solid fa-cart-shopping"></i>
+                  </p>
+                  <p>Orders Today</p>
+                </div>
+                <!--Stock Value  -->
+                <div
+                  class="col-2 mx-1 d-flex flex-column align-items-center justify-content-center bg-light rounded-4 Dashboard-class-hovor"
+                >
+                  <p
+                    class="fs-4 fw-bold mt-3 d-flex justify-content-center align-items-center"
+                  >
+                    <span id="Stock-Value">0 </span>
+                    <i
+                      class="fa-solid fa-sack-dollar justify-content-center"
+                    ></i>
+                  </p>
+                  <p>Stock Value</p>
+                </div>
+                <!--Inventory Alerts  -->
+                <div
+                  class="col-2 mx-1 d-flex flex-column align-items-center justify-content-center bg-light rounded-4 Dashboard-class-hovor"
+                >
+                  <p
+                    class="fs-4 fw-bold mt-3 d-flex justify-content-center align-items-center"
+                  >
+                    <span id="Inventory-Alerts"> 0</span>
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                  </p>
+                  <p>Inventory Alerts</p>
+                </div>
+              </div>
+              <!-- End body four (4) content -->
+
+              <!-- body two (2) content -->
+              <div class="row mt-4">
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Monthly Order Status</h5>
+                            <div class="chart-container">
+                                <canvas id="monthlyWorkChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Stock by Gender</h5>
+                            <div class="chart-container">
+                                <canvas id="stockByGenderChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            </div>
+            <!-- End dashboard-body-page -->
+
+            <!-- orders-body-page -->
+            <div class="orders-page">
+              <div class="container">
+                <table class="table table-hover table-striped">
+                  <thead>
+                      <tr>
+                          <th>Order ID</th>
+                          <th>Date</th>
+                          <th>Customer ID</th>
+                          <th>Order Status</th>
+                          <th>Payment Status</th>
+                          <th class="text-center">Total</th>
+                          <th class="text-center">Actions</th>
+                      </tr>
+                  </thead>
+                  <tbody></tbody>
+              </table>
+              </div>
+            </div>
+            <!-- ENd orders-body-page -->
+            
+            <!-- Products-body-page -->
+            <div class="Products-page mb-auto">
+              <!-- Products List View -->
+              <div class="products-list-view">
+                <div
+                  class="d-flex justify-content-between align-items-center mb-3"
+                >
+                  <h2>Products</h2>
+                  <a
+                    href="#"
+                    class="btn btn-outline-primary me-5"
+                    id="addNewProductBtn"
+                  >
+                    <i class="fas fa-plus"></i> Add New
+                  </a>
+                </div>
+
+                <div class="table-responsive px-2 me-2">
+                  <table class="table table-hover" id="productsTable">
+                    <thead>
+                      <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Brand</th>
+                        <th>Gender</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th class="text-end">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                      <!-- Products will be loaded here -->
+                    </tbody>
+                  </table>
+                  <nav aria-label="Product pagination">
+                    <ul
+                      class="pagination justify-content-center"
+                      id="desktopPagination"
+                    ></ul>
+                  </nav>
+                </div>
+              </div>
+
+              <!-- Add Product Form -->
+              <div class="add-product-view d-none">
+                <div
+                  class="d-flex justify-content-between align-items-center mb-3"
+                >
+                  <h2>Add New Product</h2>
+                  <a
+                    href="#"
+                    class="btn btn-outline-secondary back-to-products-btn me-5"
+                  >
+                    <i class="fas fa-arrow-left me-1"></i> Back to Products
+                  </a>
+                </div>
+
+                <div
+                  class="card"
+                  style="max-height: calc(100vh - 200px); overflow-y: auto"
+                >
+                  <div class="card-body">
+                    <form
+                      id="addProductForm"
+                      style="
+                        display: flex;
+                        flex-direction: column;
+                        min-height: 100%;
+                      "
+                    >
+                      <div class="row mb-3">
+                        <div class="col-md-6">
+                          <label class="form-label">Product Name</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="productName"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Brand</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="productBrand"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <div class="col-md-4">
+                          <label class="form-label">Gender</label>
+                          <select
+                            class="form-select"
+                            id="productGender"
+                            required
+                          >
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                          </select>
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label">Price</label>
+                          <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input
+                              type="number"
+                              min="1"
+                              class="form-control"
+                              id="productPrice"
+                              step="0.01"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label">Stock Quantity</label>
+                          <input
+                            type="number"
+                            min="1"
+                            class="form-control"
+                            id="productStock"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <div class="col-md-12">
+                          <label class="form-label">Product Image</label>
+                          <p class="warningCaseNotValid"></p>
+                          <div class="input-group">
+                            <input
+                              type="file"
+                              class="form-control"
+                              id="productImageUpload"
+                              accept="image/*"
+                              style="display: none"
+                            />
+                            <button
+                              type="button"
+                              class="btn btn-outline-secondary"
+                              id="productImageBtn"
+                            >
+                              <i class="fas fa-image me-1"></i> Choose Image
+                            </button>
+                            <input type="hidden" id="productImage" />
+                          </div>
+                          <div
+                            id="imagePreview"
+                            class="mt-2"
+                            style="display: none"
+                          >
+                            <img
+                              id="previewImage"
+                              src="#"
+                              alt="Preview"
+                              class="img-thumbnail"
+                              width="100"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea
+                          class="form-control"
+                          id="productDescription"
+                          rows="3"
+                        ></textarea>
+                      </div>
+                      <div style="margin-top: auto; padding-top: 20px">
+                        <div class="d-flex justify-content-end">
+                          <a
+                            href="#"
+                            class="btn btn-outline-secondary me-2 back-to-products-btn"
+                          >
+                            Cancel
+                          </a>
+                          <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Save Product
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Edit Product Form -->
+              <div class="edit-product-view d-none">
+                <div
+                  class="d-flex justify-content-between align-items-center mb-3"
+                >
+                  <h2>Edit Product</h2>
+                  <a
+                    href="#"
+                    class="btn btn-outline-secondary back-to-products-btn"
+                  >
+                    <i class="fas fa-arrow-left me-1"></i> Back to Products
+                  </a>
+                </div>
+
+                <div
+                  class="card"
+                  style="max-height: calc(100vh - 200px); overflow-y: auto"
+                >
+                  <div class="card-body">
+                    <form
+                      id="editProductForm"
+                      style="
+                        display: flex;
+                        flex-direction: column;
+                        min-height: 100%;
+                      "
+                    >
+                      <input type="hidden" id="editProductId" />
+                      <div class="row mb-3">
+                        <div class="col-md-6">
+                          <label class="form-label">Product Name</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="editProductName"
+                            required
+                          />
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Brand</label>
+                          <input
+                            type="text"
+                            class="form-control"
+                            id="editProductBrand"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <div class="col-md-4">
+                          <label class="form-label">Gender</label>
+                          <select
+                            class="form-select"
+                            id="editProductGender"
+                            required
+                          >
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                          </select>
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label">Price</label>
+                          <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input
+                              type="number"
+                              min="1"
+                              class="form-control"
+                              id="editProductPrice"
+                              step="0.01"
+                              required
+                            />
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <label class="form-label">Stock Quantity</label>
+                          <input
+                            type="number"
+                            min="1"
+                            class="form-control"
+                            id="editProductStock"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div class="row mb-3">
+                        <div class="col-md-12">
+                          <label class="form-label">Product Image</label>
+                          <p class="WarningEditImage"></p>
+                          <div class="input-group">
+                            <input
+                              type="file"
+                              class="form-control"
+                              id="editProductImageUpload"
+                              accept="image/*"
+                              style="display: none"
+                            />
+                            <button
+                              type="button"
+                              class="btn btn-outline-secondary"
+                              id="editProductImageBtn"
+                            >
+                              <i class="fas fa-image me-1"></i> Change Image
+                            </button>
+                            <input type="hidden" id="editProductImage" />
+                          </div>
+                          <div id="editImagePreview" class="mt-2">
+                            <img
+                              id="editPreviewImage"
+                              src="#"
+                              alt="Preview"
+                              class="img-thumbnail"
+                              width="100"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea
+                          class="form-control"
+                          id="editProductDescription"
+                          rows="3"
+                        ></textarea>
+                      </div>
+
+                      <div style="margin-top: auto; padding-top: 20px">
+                        <div class="d-flex justify-content-end">
+                          <a
+                            href="#"
+                            class="btn btn-outline-secondary me-2 back-to-products-btn"
+                          >
+                            Cancel
+                          </a>
+                          <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Update Product
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- ENd Products-body-page -->
+          </div>
+        </div>
+        <!--  End Desctop body Design -->
+      </div>
+    </div>
+
+    <!--End Desctop Design -->
+
+    <!-- Mobile Design -->
+    <div class="dashboard-item-mobile">
+      <nav class="navbar navbar-expand-lg dashboard-Mobile-style fixed-top">
+        <div class="container-fluid">
+          <div class="row w-100">
+            <!-- Logo Img -->
+            
+
+
+
+            <div class="col-3">
+              <div class="logo text-center py-4">
+                <h1 class="d-flex align-items-center justify-content-center gap-2 text-white fs-3 m-0">
+                  <i class="fa-solid fa-shop"></i>
+                  <span>Seller</span>
+                </h1>
+              </div>
+
+             <!--  <a href="#" class="d-flex align-items-end">
+                <img src="./img/logo.png" class="img-fluid" alt="" />
+              </a> -->
+            </div>
+            <!-- search bar for mobile -->
+            <div class="col-7 d-flex align-items-center justify-content-center">
+              <form class="d-flex w-100" role="search">
+                <input
+                  class="form-control me-2"
+                  type="search"
+                  placeholder="Search"
+                  aria-label="Search"
+                />
+                <button
+                  class="btn btn-outline-secondary rounded-4"
+                  type="submit"
+                >
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+              </form>
+            </div>
+            <!-- End search bar for mobile -->
+
+            <!-- button for the drop down list -->
+            <div class="col-2 d-flex align-items-center">
+              <button
+                class="col-1 border-0 navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+                style="outline: none; box-shadow: none"
+              >
+                <!-- bar icon -->
+                <i class="fa-solid fa-bars fa-2x dashboard-icon-style me-2"></i>
+              </button>
+            </div>
+            <!-- button for the drop down list -->
+
+            <!-- dropdownlist Mobile -->
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1"
+                    aria-current="page"
+                    href="#"
+                    ><i class="fa-solid fa-gear dashboard-icon-style me-1"></i>
+                    Dashboard</a
+                  >
+                </li>
+
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1"
+                    href="#"
+                  >
+                    <i class="fa-solid fa-boxes-packing me-1"></i>
+                    <span>Orders</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1 collapsed"
+                    data-bs-toggle="collapse"
+                    href="#ui-basic"
+                    aria-expanded="false"
+                  >
+                    <i class="fa-solid fa-tags me-1"></i>
+                    <span class="menu-title">Products</span>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1 collapsed"
+                    data-bs-toggle="collapse"
+                    href="#ui-basic"
+                    aria-expanded="false"
+                  >
+                  <i class="fa-solid fa-house"></i>
+                    <span id="HomePageMObile">Home Page</span>
+                  </a>
+                </li>
+
+                <li class="nav-item">
+                  <a
+                    class="nav-link dashboard-active border-bottom border-secondary my-1 collapsed"
+                    data-bs-toggle="collapse"
+                    href="#ui-basic"
+                    aria-expanded="false"
+                  >
+                  <i class="fa-solid fa-gear"></i>
+                  <span id="ManageAccountMObile">Manage Account</span>
+                  </a>
+                </li>
+              
+
+                <li class="nav-item">
+                  <a class="nav-link dashboard-active my-1" href="#">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="Logout">Logout</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <!-- dropdownlist Mobile -->
+          </div>
+        </div>
+      </nav>
+      <!--   Mobile body Design -->
+      <div class="mobile-layout w-100" style="padding-top: 70px">
+        <div class="container Dashboard-contaner">
+          <!-- body Header -->
+          <div class="custom-margin h-50"></div>
+          <div class="mt-5">
+            <div class="mt-3 fw-bold">
+              <h1 class="mt-5 fw-bold">Seller Dashboard</h1>
+            </div>
+          </div>
+
+          <div class="dashboard-page">
+            <!-- Mobile body four (2) content -->
+            <div class="row d-flex justify-content-evenly">
+              <!-- Total Sales -->
+              <div
+                class="col-4 mx-1 my-3 d-flex flex-column align-items-center justify-content-center bg-light rounded-4 Dashboard-class-hovor"
+              >
+                <p
+                  class="fs-4 fw-bold mt-3 d-flex justify-content-center align-items-center"
+                >
+                  <span class="total-sales-value"> 0</span>
+                  <i class="fa-solid fa-dollar-sign"></i>
+                </p>
+                <p>Total Sales</p>
+              </div>
+              <!-- Orders Today -->
+              <div
+                class="col-4 mx-1 my-3 d-flex flex-column align-items-center justify-content-center bg-light rounded-4 Dashboard-class-hovor"
+              >
+                <p
+                  class="fs-4 fw-bold mt-3 d-flex justify-content-center align-items-center"
+                >
+                  <span class="orders-today-value"> 0</span>
+                  <i class="fa-solid fa-cart-shopping"></i>
+                </p>
+                <p>Orders Today</p>
+              </div>
+              <!--Stock Value -->
+              <div
+                class="col-4 mx-1 my-3 d-flex flex-column align-items-center justify-content-center bg-light rounded-4 Dashboard-class-hovor"
+              >
+                <p
+                  class="fs-4 fw-bold mt-3 d-flex justify-content-center align-items-center"
+                >
+                  <span id="mobile-Stock-Value"> 0</span>
+                  <i class="fa-solid fa-sack-dollar"></i>
+                </p>
+                <p class="mx-auto">Stock Value</p>
+              </div>
+              <!--Inventory Alerts  -->
+              <div
+                class="col-4 mx-1 my-3 d-flex flex-column align-items-center justify-content-center bg-light rounded-4 Dashboard-class-hovor"
+              >
+                <p
+                  class="fs-4 fw-bold mt-3 d-flex justify-content-center align-items-center"
+                >
+                  <span id="mobile-Inventory-Alerts"> 0</span>
+                  <i class="fa-solid fa-circle-exclamation"></i>
+                </p>
+                <p>Inventory Alerts</p>
+              </div>
+            </div>
+            <!-- End Mobile body four (2) content -->
+
+            <!--  Mobile body two (1) content -->
+            <div class="row">
+              <div class="col-12 mb-3">
+                  <div class="card">
+                      <div class="card-body">
+                          <h5 class="card-title">Monthly Orders</h5>
+                          <div class="mobile-chart-container">
+                              <canvas id="mobileMonthlyWorkChart"></canvas>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-12 mb-3">
+                  <div class="card">
+                      <div class="card-body">
+                          <h5 class="card-title">Stock by Gender</h5>
+                          <div class="mobile-chart-container">
+                              <canvas id="mobileStockByGenderChart"></canvas>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  
+            <!-- End  Mobile body two (1) content -->
+          </div>
+          <!-- orders-body-page -->
+<!-- orders-body-page -->
+<div class="orders-page">
+  <div class="container-fluid">
+    <!-- Mobile Orders Header (mimics table headers) -->
+    <div class="row d-none d-md-flex bg-light fw-bold small py-2">
+      <div class="col-2">Order ID</div>
+      <div class="col-2">Date</div>
+      <div class="col-2">Customer</div>
+      <div class="col-2">Status</div>
+      <div class="col-1">Payment</div>
+      <div class="col-2 text-end">Total</div>
+      <div class="col-1 text-center">Actions</div>
+    </div>
+    
+    <!-- Mobile Orders List -->
+    <div class="list-group list-group-flush" id="mobileOrdersList">
+      <!-- Orders will be loaded here -->
+    </div>
+    
+    <!-- Orders Pagination -->
+    <nav aria-label="Orders pagination" class="mt-3">
+      <ul class="pagination pagination-sm justify-content-center" id="mobileOrdersPagination"></ul>
+    </nav>
+  </div>
+</div>
+          <!-- ENd orders-body-page -->
+
+          <!-- Products-body-page -->
+          <div class="Products-page">
+            <!-- Products List View -->
+            <div class="products-list-view">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
+                <h2>Products</h2>
+                <a
+                  href="#"
+                  class="btn btn-outline-primary btn-sm me-3"
+                  id="addNewProductBtnMobile"
+                >
+                  <i class="fas fa-plus me-1"></i> Add
+                </a>
+              </div>
+
+              <div class="list-group" id="mobileProductsList">
+                <!-- Products will be loaded here -->
+              </div>
+              <nav aria-label="Product pagination">
+                <ul
+                  class="pagination pagination-sm justify-content-center mt-3"
+                  id="mobilePagination"
+                ></ul>
+              </nav>
+            </div>
+
+            <!-- Add Product Form -->
+            <div class="add-product-view d-none">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
+                <h2>Add New Product</h2>
+                <a
+                  href="#"
+                  class="btn btn-outline-secondary btn-sm back-to-products-btn-mobile"
+                >
+                  <i class="fas fa-arrow-left me-1"></i> Back
+                </a>
+              </div>
+
+              <div class="card">
+                <div class="card-body">
+                  <form id="addProductFormMobile">
+                    <div class="mb-3">
+                      <label class="form-label">Product Name</label>
+                      <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        id="productNameMobile"
+                        required
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Brand</label>
+                      <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        id="productBrandMobile"
+                        required
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Gender</label>
+                      <select
+                        class="form-select form-select-sm"
+                        id="productGenderMobile"
+                        required
+                      >
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Price</label>
+                      <div class="input-group input-group-sm">
+                        <span class="input-group-text">$</span>
+                        <input
+                          type="number"
+                          min="1"
+                          class="form-control"
+                          id="productPriceMobile"
+                          step="0.01"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Stock Quantity</label>
+                      <input
+                        type="number"
+                        min="1"
+                        class="form-control form-control-sm"
+                        id="productStockMobile"
+                        required
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Product Image</label>
+                      <p class="warningCaseNotValidMobile"></p>
+                      <div class="input-group input-group-sm">
+                        <input
+                          type="file"
+                          class="form-control"
+                          id="productImageUploadMobile"
+                          accept="image/*"
+                          style="display: none"
+                        />
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary"
+                          id="productImageBtnMobile"
+                        >
+                          <i class="fas fa-image me-1"></i> Choose Image
+                        </button>
+                        <input type="hidden" id="productImageMobile" />
+                      </div>
+                      <div
+                        id="imagePreviewMobile"
+                        class="mt-2"
+                        style="display: none"
+                      >
+                        <img
+                          id="previewImageMobile"
+                          src="#"
+                          alt="Preview"
+                          class="img-thumbnail"
+                          width="80"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Description</label>
+                      <textarea
+                        class="form-control form-control-sm"
+                        id="productDescriptionMobile"
+                        rows="3"
+                      ></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                      <a
+                        href="#"
+                        class="btn btn-outline-secondary btn-sm me-2 back-to-products-btn-mobile"
+                      >
+                        Cancel
+                      </a>
+                      <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fas fa-save me-1"></i> Save
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- Edit Product Form -->
+            <div class="edit-product-view d-none">
+              <div
+                class="d-flex justify-content-between align-items-center mb-3"
+              >
+                <h2>Edit Product</h2>
+                <a
+                  href="#"
+                  class="btn btn-outline-secondary btn-sm back-to-products-btn-mobile"
+                >
+                  <i class="fas fa-arrow-left me-1"></i> Back
+                </a>
+              </div>
+
+              <div class="card">
+                <div class="card-body">
+                  <form id="editProductFormMobile">
+                    <input type="hidden" id="editProductIdMobile" />
+                    <div class="mb-3">
+                      <label class="form-label">Product Name</label>
+                      <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        id="editProductNameMobile"
+                        required
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Brand</label>
+                      <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        id="editProductBrandMobile"
+                        required
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Gender</label>
+                      <select
+                        class="form-select form-select-sm"
+                        id="editProductGenderMobile"
+                        required
+                      >
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Price</label>
+                      <div class="input-group input-group-sm">
+                        <span class="input-group-text">$</span>
+                        <input
+                          type="number"
+                          min="1"
+                          class="form-control"
+                          id="editProductPriceMobile"
+                          step="0.01"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Stock Quantity</label>
+                      <input
+                        type="number"
+                        min="1"
+                        class="form-control form-control-sm"
+                        id="editProductStockMobile"
+                        required
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Product Image</label>
+                      <div class="input-group input-group-sm">
+                        <input
+                          type="file"
+                          class="form-control"
+                          id="editProductImageUploadMobile"
+                          accept="image/*"
+                          style="display: none"
+                        />
+                        <button
+                          type="button"
+                          class="btn btn-outline-secondary"
+                          id="editProductImageBtnMobile"
+                        >
+                          <i class="fas fa-image me-1"></i> Change Image
+                        </button>
+                        <input type="hidden" id="editProductImageMobile" />
+                      </div>
+                      <div id="editImagePreviewMobile" class="mt-2">
+                        <img
+                          id="editPreviewImageMobile"
+                          src="#"
+                          alt="Preview"
+                          class="img-thumbnail"
+                          width="80"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Description</label>
+                      <textarea
+                        class="form-control form-control-sm"
+                        id="editProductDescriptionMobile"
+                        rows="3"
+                      ></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                      <a
+                        href="#"
+                        class="btn btn-outline-secondary btn-sm me-2 back-to-products-btn-mobile"
+                      >
+                        Cancel
+                      </a>
+                      <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fas fa-save me-1"></i> Update
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ENd Products-body-page -->
+        </div>
+      </div>
+      <!--  End Mobile body Design -->
+    </div>
+    <!-- End Mobile Design -->
+  </body>
+</html>

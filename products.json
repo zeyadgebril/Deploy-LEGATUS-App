@@ -1,0 +1,553 @@
+ [
+    {
+      "id": 1,
+      "name": "Analog Watch International",
+      "image": "watches images/Analog watch International Watch.png",
+      "brand": "International",
+      "price": 120,
+      "stock": 45,
+      "gender": ["men", "women"],
+      "description": "Classic analog watch with minimalist design, perfect for everyday wear. Features a stainless steel case and Japanese quartz movement."
+    },
+    {
+      "id": 2,
+      "name": "Bulgari Bangle Watch",
+      "image": "watches images/Bulgari Watch Jewellery Bangle Bezel.png",
+      "brand": "Bulgari",
+      "price": 18500,
+      "stock": 2,
+      "gender": ["women"],
+      "description": "Luxury jewelry watch combining Swiss precision with Italian design. 18k gold bangle with diamond bezel and mother-of-pearl dial."
+    },
+    {
+      "id": 3,
+      "name": "Bulgari Ring Watch",
+      "image": "watches images/Bulgari Watch Jewellery Ring Luxury goods.png",
+      "brand": "Bulgari",
+      "price": 22000,
+      "stock": 1,
+      "gender": ["women"],
+      "description": "Extraordinary ring watch with hidden time display. Set with brilliant-cut diamonds and crafted in rose gold."
+    },
+    {
+      "id": 4,
+      "name": "Casio Edifice",
+      "image": "watches images/Casio Edifice Analog watch.png",
+      "brand": "Casio",
+      "price": 275,
+      "stock": 32,
+      "gender": ["men"],
+      "description": "Solar-powered chronograph with tachymeter scale. 100m water resistant with stainless steel band and sapphire-coated glass."
+    },
+    {
+      "id": 5,
+      "name": "Citizen Eco-Drive",
+      "image": "watches images/Citizen Holdings Eco-Drive Watch.png",
+      "brand": "Citizen",
+      "price": 325,
+      "stock": 28,
+      "gender": ["men", "women"],
+      "description": "Light-powered technology eliminates battery changes. Features date display, luminous hands, and scratch-resistant mineral crystal."
+    },
+    {
+      "id": 6,
+      "name": "Hamilton Jazzmaster",
+      "image": "watches images/Fender Jazzmaster Hamilton Watch.png",
+      "brand": "Hamilton",
+      "price": 1150,
+      "stock": 15,
+      "gender": ["men"],
+      "description": "Inspired by musical instruments, this automatic watch features an open-heart design revealing the balance wheel."
+    },
+    {
+      "id": 7,
+      "name": "Vacheron Constantin Geneva Seal",
+      "image": "watches images/Geneva Seal Vacheron Constantin Watch.png",
+      "brand": "Vacheron Constantin",
+      "price": 42000,
+      "stock": 1,
+      "gender": ["men"],
+      "description": "Haute horology timepiece bearing the prestigious Geneva Seal. Manual-wind movement with 58-hour power reserve."
+    },
+    {
+      "id": 8,
+      "name": "Hamilton Automatic",
+      "image": "watches images/Hamilton Watch Company Automatic watch.png",
+      "brand": "Hamilton",
+      "price": 850,
+      "stock": 20,
+      "gender": ["men"],
+      "description": "American spirit with Swiss precision. Features H-10 movement with 80-hour power reserve and date function."
+    },
+    {
+      "id": 9,
+      "name": "Hamilton Classic",
+      "image": "watches images/Hamilton Watch Company.png",
+      "brand": "Hamilton",
+      "price": 750,
+      "stock": 25,
+      "gender": ["men", "women"],
+      "description": "Timeless design with Swiss quartz movement. Stainless steel case with sapphire crystal and 50m water resistance."
+    },
+    {
+      "id": 10,
+      "name": "Jaeger-LeCoultre Automatic",
+      "image": "watches images/Jaeger LeCoultre Automatic watch.png",
+      "brand": "Jaeger-LeCoultre",
+      "price": 14800,
+      "stock": 3,
+      "gender": ["men"],
+      "description": "Master Control Date with 70-hour power reserve. Silver sunray-brushed dial with applied indexes."
+    },
+    {
+      "id": 11,
+      "name": "Casio G-Shock Master",
+      "image": "watches images/Master of G-Shock Shock-resistant watch Casio.png",
+      "brand": "Casio",
+      "price": 450,
+      "stock": 38,
+      "gender": ["men", "women"],
+      "description": "Tactical shock-resistant watch with solar power and atomic timekeeping. Mud resistant with LED backlight."
+    },
+    {
+      "id": 12,
+      "name": "Jido Automatic",
+      "image": "watches images/Jido Automatic watch Clock.png",
+      "brand": "Jido",
+      "price": 600,
+      "stock": 10,
+      "gender": ["men"],
+      "description": "Mechanical automatic movement with exhibition caseback. Skeletonized dial showing the intricate movement."
+    },
+    {
+      "id": 13,
+      "name": "Montblanc Automatic",
+      "image": "watches images/Montblanc Automatic watch.png",
+      "brand": "Montblanc",
+      "price": 3800,
+      "stock": 8,
+      "gender": ["men"],
+      "description": "Heritage collection with in-house MB 24.17 movement. Silver guilloché dial with Roman numerals."
+    },
+    {
+      "id": 14,
+      "name": "Omega Seamaster Co-Axial",
+      "image": "watches images/Omega SA Omega Seamaster Coaxial.png",
+      "brand": "Omega",
+      "price": 5100,
+      "stock": 12,
+      "gender": ["men"],
+      "description": "Professional 300m diver with co-axial escapement. Ceramic bezel and helium escape valve."
+    },
+    {
+      "id": 15,
+      "name": "Omega Quartz",
+      "image": "watches images/Omega SA Watch Jewellery Quartz clock.png",
+      "brand": "Omega",
+      "price": 2200,
+      "stock": 18,
+      "gender": ["women"],
+      "description": "Elegant ladies' watch with diamond markers. Quartz precision with mother-of-pearl dial."
+    },
+    {
+      "id": 16,
+      "name": "Patek Philippe Calibre",
+      "image": "watches images/Patek Philippe Calibre Patek Philipp.png",
+      "brand": "Patek Philippe",
+      "price": 35000,
+      "stock": 1,
+      "gender": ["men"],
+      "description": "Complicated manual-wind movement with perpetual calendar. 18k gold case with sapphire caseback."
+    },
+    {
+      "id": 17,
+      "name": "Rado Watch",
+      "image": "watches images/Rado Watch Jewellery Tissot.png",
+      "brand": "Rado",
+      "price": 1800,
+      "stock": 14,
+      "gender": ["men", "women"],
+      "description": "High-tech ceramic case with scratch-resistant surface. Automatic movement with date display."
+    },
+    {
+      "id": 18,
+      "name": "Rolex Daytona",
+      "image": "watches images/Rolex Datejust Rolex Daytona.png",
+      "brand": "Rolex",
+      "price": 13500,
+      "stock": 2,
+      "gender": ["men"],
+      "description": "Iconic chronograph with tachymetric scale. 4130 movement with 72-hour power reserve."
+    },
+    {
+      "id": 19,
+      "name": "Rolex Submariner",
+      "image": "watches images/Rolex Datejust Rolex Submariner.png",
+      "brand": "Rolex",
+      "price": 9500,
+      "stock": 4,
+      "gender": ["men"],
+      "description": "Legendary dive watch with 300m water resistance. Cerachrom bezel and Oystersteel case."
+    },
+    {
+      "id": 20,
+      "name": "Rolex Datejust",
+      "image": "watches images/Rolex Datejust Watch Strap.png",
+      "brand": "Rolex",
+      "price": 350,
+      "stock": 30,
+      "gender": ["men", "women"],
+      "description": "Genuine Rolex Oyster bracelet. Stainless steel with Oysterclasp and Easylink extension."
+    },
+    {
+      "id": 21,
+      "name": "Rado Watch Daytona",
+      "image": "watches images/Rolex Daytona Rado Watch.png",
+      "brand": "Rado",
+      "price": 2200,
+      "stock": 7,
+      "gender": ["men"],
+      "description": "Ceramic chronograph with automatic movement. Column-wheel mechanism and vertical clutch."
+    },
+    {
+      "id": 22,
+      "name": "Rolex GMT Master II",
+      "image": "watches images/Rolex GMT Master II.png",
+      "brand": "Rolex",
+      "price": 11000,
+      "stock": 3,
+      "gender": ["men"],
+      "description": "Dual timezone watch with 24-hour rotatable bezel. Calibre 3285 with 70-hour power reserve."
+    },
+    {
+      "id": 23,
+      "name": "Vintage Analog Watch",
+      "image": "watches images/round analog watch with gold-colored.png",
+      "brand": "Vintage",
+      "price": 150,
+      "stock": 22,
+      "gender": ["men", "women"],
+      "description": "Retro-styled watch with aged leather strap. Hand-wind mechanical movement."
+    },
+    {
+      "id": 24,
+      "name": "Black Rolex Analog",
+      "image": "watches images/round black Rolex analog watch.png",
+      "brand": "Rolex",
+      "price": 8500,
+      "stock": 5,
+      "gender": ["men"],
+      "description": "Oyster Perpetual with black sunray dial. Superlative chronometer certified."
+    },
+    {
+      "id": 25,
+      "name": "Gold Rolex Analog",
+      "image": "watches images/round gold-colored Rolex analog.png",
+      "brand": "Rolex",
+      "price": 28000,
+      "stock": 1,
+      "gender": ["men"],
+      "description": "Day-Date 40 in 18k yellow gold. President bracelet with fluted bezel."
+    },
+    {
+      "id": 26,
+      "name": "Carrera Chronograph",
+      "image": "watches images/round silver-colored Carrea chronograph.png",
+      "brand": "TAG Heuer",
+      "price": 4500,
+      "stock": 11,
+      "gender": ["men"],
+      "description": "Legendary racing chronograph with silver panda dial. Calibre Heuer 02 movement."
+    },
+    {
+      "id": 27,
+      "name": "IWC Schaffhausen",
+      "image": "watches images/Schaffhausen International Watch.png",
+      "brand": "IWC",
+      "price": 7800,
+      "stock": 9,
+      "gender": ["men"],
+      "description": "Pilot's watch with soft-iron inner case. Date and day display with 72-hour power reserve."
+    },
+    {
+      "id": 28,
+     "name": "Cartier Tank Watch",
+      "image": "watches images/Cartier Tank Watch Jewellery Cartier Santos.png",
+      "brand": "Cartier",
+      "price": 6500,
+      "stock": 8,
+      "gender": ["men", "women"],
+      "description": "Iconic rectangular watch with Roman numerals and blue sword-shaped hands. Features a sapphire cabochon crown and Swiss quartz movement."
+    },
+    {
+      "id": 29,
+      "name": "Tissot Analog",
+      "image": "watches images/Tissot Analog watch.png",
+      "brand": "Tissot",
+      "price": 450,
+      "stock": 35,
+      "gender": ["men", "women"],
+      "description": "Classic dress watch with Swiss quartz movement. Sapphire crystal and 50m water resistance."
+    },
+    {
+      "id": 30,
+      "name": "Tissot Automatic",
+      "image": "watches images/Tissot Automatic watch.png",
+      "brand": "Tissot",
+      "price": 650,
+      "stock": 23,
+      "gender": ["men"],
+      "description": "Powermatic 80 with 80-hour power reserve. Exhibition caseback showing decorated movement."
+    },
+    {
+      "id": 31,
+      "name": "Tissot Wristwatch",
+      "image": "watches images/tissot wristwatch.png",
+      "brand": "Tissot",
+      "price": 350,
+      "stock": 29,
+      "gender": ["women"],
+      "description": "Elegant ladies' watch with mother-of-pearl dial. Swiss quartz movement with date window."
+    },
+    {
+      "id": 32,
+      "name": "Vacheron Constantin Automatic",
+      "image": "watches images/Vacheron Constantin Automatic watch.png",
+      "brand": "Vacheron Constantin",
+      "price": 22500,
+      "stock": 2,
+      "gender": ["men"],
+      "description": "Patrimony collection with ultra-thin automatic movement. 18k white gold case."
+    },
+    {
+      "id": 33,
+      "name": "Vacheron Constantin Gold",
+      "image": "watches images/Vacheron Constantin Gold Watch.png",
+      "brand": "Vacheron Constantin",
+      "price": 32000,
+      "stock": 1,
+      "gender": ["men"],
+      "description": "Traditionnelle complete calendar in 18k rose gold. Moon phase and day/night indicator."
+    },
+    {
+      "id": 34,
+      "name": "Casio Edifice G-Shock",
+      "image": "watches images/Watch Casio Edifice G-Shock.png",
+      "brand": "Casio",
+      "price": 300,
+      "stock": 27,
+      "gender": ["men", "women"],
+      "description": "Hybrid Edifice-G-Shock model with shock resistance and chronograph functions."
+    },
+    {
+      "id": 35,
+      "name": "Casio Edifice Sapphire",
+      "image": "watches images/Watch Casio Edifice Sapphire.png",
+      "brand": "Casio",
+      "price": 400,
+      "stock": 19,
+      "gender": ["men"],
+      "description": "Premium Edifice model with sapphire crystal and solar charging. 200m water resistance."
+    },
+    {
+      "id": 36,
+      "name": "Chronograph Clock",
+      "image": "watches images/Watch Chronograph Clock.png",
+      "brand": "Chronoswiss",
+      "price": 5500,
+      "stock": 6,
+      "gender": ["men"],
+      "description": "Regulateur-style chronograph with onion crown. Manual-wind column-wheel chronograph."
+    },
+    {
+      "id": 37,
+      "name": "Gold Quartz Chronograph",
+      "image": "watches images/Watch Quartz clock Chronograph Strap Gold.png",
+      "brand": "Longines",
+      "price": 1800,
+      "stock": 15,
+      "gender": ["women"],
+      "description": "Elegant gold-plated chronograph with diamond markers. Mother-of-pearl dial."
+    },
+    {
+      "id": 38,
+      "name": "Seiko Watch Strap",
+      "image": "watches images/Watch strap Watch Strap Seiko.png",
+      "brand": "Seiko",
+      "price": 120,
+      "stock": 42,
+      "gender": ["men", "women"],
+      "description": "Premium leather strap compatible with multiple Seiko models. Alligator pattern with deployment clasp."
+    },
+    {
+      "id": 39,
+      "name": "TAG Heuer Watch",
+      "image": "watches images/Watch TAG Heuer.png",
+      "brand": "TAG Heuer",
+      "price": 3800,
+      "stock": 10,
+      "gender": ["men"],
+      "description": "Carrera chronograph with Heuer 02 movement. 80-hour power reserve and sapphire caseback."
+    },
+    {
+      "id": 40,
+      "name": "Omega Speedmaster Professional Moonwatch",
+      "image": "watches images/Omega Speedmaster Watch Omega SA Chronograph.png",
+      "brand": "Omega",
+      "price": 6300,
+      "stock": 9,
+      "gender": ["men"],
+      "description": "The legendary Moonwatch with manual-wind caliber 3861 movement. Features hesalite crystal, tachymeter bezel, and NASA-certified chronograph. Black dial with iconic subdials and 50m water resistance."
+    },
+    {
+      "id": 41,
+      "name": "Breitling Navitimer",
+      "image": "watches images/Breitling Navitimer.png",
+      "brand": "Breitling",
+      "price": 7200,
+      "stock": 5,
+      "gender": ["men"],
+      "description": "Iconic pilot chronograph with circular slide rule bezel. COSC-certified chronometer with 70-hour power reserve."
+    },
+    {
+      "id": 42,
+      "name": "Cartier Ballon Bleu",
+      "image": "watches images/Cartier Ballon Bleu.png",
+      "brand": "Cartier",
+      "price": 6500,
+      "stock": 6,
+      "gender": ["women"],
+      "description": "Elegant round case with integrated crown protector. Automatic movement with blue cabochon crown and Roman numeral dial."
+    },
+    {
+      "id": 43,
+      "name": "Seiko Presage Cocktail Time",
+      "image": "watches images/Seiko Presage Cocktail Time.png",
+      "brand": "Seiko",
+      "price": 450,
+      "stock": 20,
+      "gender": ["men"],
+      "description": "Dress watch inspired by cocktail bars. Sunburst dial with automatic movement and stainless steel bracelet."
+    },
+    {
+      "id": 44,
+      "name": "Panerai Luminor Marina",
+      "image": "watches images/Panerai Luminor Marina.png",
+      "brand": "Panerai",
+      "price": 8700,
+      "stock": 4,
+      "gender": ["men"],
+      "description": "Distinctive cushion case with crown guard. In-house movement with 3-day power reserve and small seconds."
+    },
+    {
+      "id": 45,
+      "name": "Audemars Piguet Royal Oak",
+      "image": "watches images/Audemars Piguet Royal Oak.png",
+      "brand": "Audemars Piguet",
+      "price": 29500,
+      "stock": 2,
+      "gender": ["men"],
+      "description": "Luxury sports watch with octagonal bezel and 'Tapisserie' dial. Integrated bracelet with automatic movement."
+    },
+    {
+      "id": 46,
+      "name": "Bremont ALT1-P Chronograph",
+      "image": "watches images/Bremont ALT1-P Chronograph.png",
+      "brand": "Bremont",
+      "price": 5200,
+      "stock": 6,
+      "gender": ["men"],
+      "description": "British aviation chronograph with hardened steel case. COSC-certified chronometer with vintage pilot style."
+    },
+    {
+      "id": 47,
+      "name": "Chanel J12 White Ceramic",
+      "image": "watches images/Chanel J12 White Ceramic.png",
+      "brand": "Chanel",
+      "price": 6300,
+      "stock": 7,
+      "gender": ["women"],
+      "description": "Luxury fashion watch with high-resistance ceramic case and bracelet. Automatic Swiss movement with sporty elegance."
+    },
+    {
+      "id": 48,
+      "name": "Fossil Grant Chronograph",
+      "image": "watches images/Fossil Grant Chronograph.png",
+      "brand": "Fossil",
+      "price": 180,
+      "stock": 40,
+      "gender": ["men"],
+      "description": "Affordable chronograph with Roman numerals and leather strap. Quartz movement with stopwatch functionality."
+    },
+    {
+      "id": 49,
+      "name": "Breguet Classique",
+      "image": "watches images/Breguet Classique.png",
+      "brand": "Breguet",
+      "price": 20500,
+      "stock": 2,
+      "gender": ["men"],
+      "description": "Timeless elegance with guilloché dial and blued Breguet hands. Manual-wind movement with transparent caseback."
+    },
+    {
+      "id": 50,
+      "name": "Hublot Big Bang",
+      "image": "watches images/Hublot Big Bang.png",
+      "brand": "Hublot",
+      "price": 15800,
+      "stock": 3,
+      "gender": ["men"],
+      "description": "Bold fusion of materials with ceramic and rubber. Skeletonized chronograph dial with automatic movement."
+    },
+    {
+      "id": 51,
+      "name": "Skagen Mesh Minimalist",
+      "image": "watches images/Skagen Mesh Minimalist.png",
+      "brand": "Skagen",
+      "price": 150,
+      "stock": 34,
+      "gender": ["women"],
+      "description": "Scandinavian design with slim profile and mesh bracelet. Clean dial powered by quartz movement."
+    },
+    {
+      "id": 52,
+      "name": "Bell & Ross BR 03-92",
+      "image": "watches images/Bell Ross BR 03-92.png",
+      "brand": "Bell & Ross",
+      "price": 3900,
+      "stock": 5,
+      "gender": ["men"],
+      "description": "Square case inspired by aviation instruments. Automatic movement with luminous numerals and 100m water resistance."
+    },
+    {
+      "id": 53,
+      "name": "Nixon Time Teller",
+      "image": "watches images/Nixon Time Teller.png",
+      "brand": "Nixon",
+      "price": 125,
+      "stock": 60,
+      "gender": ["men", "women"],
+      "description": "Modern minimalist design with bold colors. Quartz movement with adjustable stainless steel band."
+    },
+    {
+      "id": 54,
+      "name": "Timex Expedition Scout",
+      "image": "watches images/Timex Expedition Scout.png",
+      "brand": "Timex",
+      "price": 95,
+      "stock": 50,
+      "gender": ["men"],
+      "description": "Rugged outdoor watch with Indiglo backlight. Nylon strap and water resistance up to 50 meters."
+    },
+    {
+      "id": 55,
+      "name": "Movado Museum Classic",
+      "image": "watches images/Movado Museum Classic.png",
+      "brand": "Movado",
+      "price": 695,
+      "stock": 14,
+      "gender": ["men", "women"],
+      "description": "Signature dot dial with minimalist aesthetic. Swiss quartz movement with black leather strap."
+    }
+    
+  ]

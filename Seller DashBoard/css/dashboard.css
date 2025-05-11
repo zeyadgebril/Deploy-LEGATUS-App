@@ -1,0 +1,170 @@
+:root {
+  --dashboard-color: #002f5f;
+  --dashboard-icon-color: rgb(255, 255, 255);
+  --dashboard-content-color-hovor: #dae5ef;
+  --dashboard-header-color: rgb(254, 254, 254);
+  --dashboard-bg-color: rgb(242, 242, 245);
+  --dashboard-font-hovor-color: #002f5f;
+}
+html,
+body {
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  max-width: 100vw;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Desctop Design */
+.dashboard-Desctop-style {
+  background-color: var(--dashboard-color) !important;
+  /* Remove height: 100vh */
+  position: sticky;
+  top: 0;
+  height: 100vh; /* Take full height of parent */
+}
+.dashboard-icon-style {
+  color: var(--dashboard-icon-color) !important;
+}
+
+.dashboard-active {
+  color: var(--dashboard-icon-color) !important;
+}
+.dashboard-active:hover {
+  color: var(--dashboard-content-color-hovor) !important;
+}
+.header-Dashboard-style {
+  background-color: var(--dashboard-header-color);
+}
+.dashboard-bg-color {
+  background-color: var(--dashboard-bg-color) !important;
+}
+.Dashboard-class-hovor {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.Dashboard-class-hovor:hover {
+  background-color: var(--dashboard-font-hovor-color);
+  color: var(--dashboard-font-hovor-color);
+  transform: scale(1.2);
+  transition: all 0.2s ease-in-out;
+}
+.orders-page table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.orders-page table thead {
+  position: sticky;
+  top: 0;
+  background-color: white; /* Match your table header background */
+  z-index: 10;
+}
+.chart-container {
+  position: relative;
+  margin: auto;
+}
+
+/* Responsive chart sizing */
+canvas {
+  max-width: 100%;
+  height: auto !important;
+}
+
+/* Dashboard card styling for charts */
+.dashboard-chart-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  margin-bottom: 20px;
+}
+.orders-page .container {
+  max-height: calc(100vh - 200px); /* Adjust based on your header height */
+  overflow-y: auto;
+  padding-right: 15px; /* Prevent scrollbar from overlapping content */
+}
+/* Desctop Design */
+
+/* Mobile Design */
+.dashboard-Mobile-style {
+  background-color: var(--dashboard-color) !important;
+}
+.mobile-layout {
+  height: 100vh;
+}
+/* Mobile Design */
+
+.dashboard-item-desktop {
+  display: block;
+  min-height: 100vh; /* Ensure it covers at least the viewport height */
+}
+.dashboard-item-mobile {
+  display: none;
+}
+
+@media (max-width: 840px) {
+  .dashboard-item-desktop {
+    display: none;
+  }
+  .dashboard-item-mobile {
+    display: block;
+  }
+  .dashboard-chart-card {
+    padding: 10px;
+  }
+}
+
+/* Search not found message styles */
+.not-found-message {
+  padding: 2rem;
+  text-align: center;
+}
+
+.not-found-message i {
+  font-size: 3rem;
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+
+.not-found-message h4 {
+  color: #343a40;
+  margin-bottom: 0.5rem;
+}
+
+.not-found-message p {
+  color: #6c757d;
+}
+
+.clear-search-btn {
+  margin-top: 1rem;
+}
+
+/* For Desktop */
+.dashboard-page {
+  min-height: 100vh; /* Full viewport height */
+  padding-bottom: 2rem; /* Optional: Add padding if needed */
+}
+
+/* For Mobile */
+.mobile-layout .dashboard-page {
+  min-height: calc(100vh - 70px); /* Adjust for fixed header */
+}
+
+/* Remove any forced overflow restrictions */
+.dashboard-bg-color,
+.dashboard-item-desktop,
+.dashboard-item-mobile {
+  overflow: visible !important; /* Override any existing overflow */
+}
+
+/* Desktop charts */
+.chart-container {
+  height: 300px; /* Fixed height for consistency */
+}
+
+/* Mobile charts */
+.mobile-chart-container {
+  height: 250px;
+}

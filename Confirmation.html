@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Confirmation</title>
+    <link rel="icon" href="./images/web icon.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #002f5f;
+        --secondary-color: #4361ee;
+        --success-color: #4cc9f0;
+        --text-color: #2b2d42;
+        --light-bg: #f8f9fa;
+        --border-radius: 10px;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f7fa;
+        color: var(--text-color);
+        font-size: 16px;
+      }
+
+      .card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+
+      .confirmation-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        padding: 30px 20px;
+        text-align: center;
+        color: white;
+        position: relative;
+      }
+
+      .confirmation-badge {
+        background-color: white;
+        color: var(--primary-color);
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        margin: 0 auto 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .order-header {
+        background-color: white;
+        padding: 20px;
+        border-radius: var(--border-radius);
+        margin-bottom: 20px;
+        border-left: 4px solid var(--primary-color);
+      }
+
+      .product-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-right: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .product-card {
+        transition: transform 0.2s ease;
+        margin-bottom: 15px;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: white;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      .product-card:hover {
+        transform: translateY(-3px);
+      }
+
+      .product-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .product-price {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-color);
+      }
+
+      .product-quantity {
+        font-size: 1rem;
+        color: #666;
+      }
+
+      .summary-card {
+        background-color: white;
+        border-radius: var(--border-radius);
+      }
+
+      .summary-row {
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #eee;
+        font-size: 1.1rem;
+      }
+
+      .summary-row:last-child {
+        border-bottom: none;
+      }
+
+      .total-row {
+        background-color: #f0f7ff;
+        font-weight: bold;
+        color: var(--primary-color);
+        font-size: 1.3rem;
+        padding: 18px 20px;
+      }
+
+      .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 1rem;
+        font-weight: 500;
+        background-color: #002f5f;
+        color: white;
+      }
+
+      .customer-info-card {
+        background-color: white;
+        border-radius: var(--border-radius);
+        margin-bottom: 20px;
+      }
+
+      .info-section {
+        padding: 18px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .info-section:last-child {
+        border-bottom: none;
+      }
+
+      .info-section h6 {
+        color: #666;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+        letter-spacing: 0.5px;
+      }
+
+      .info-section p {
+        margin-bottom: 5px;
+        font-size: 1.05rem;
+      }
+
+      /* Enhanced Next Steps Section */
+      .next-steps {
+        background-color: white;
+        border-radius: var(--border-radius);
+        padding: 25px;
+        margin-top: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .next-steps h5 {
+        margin-bottom: 20px;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        border-bottom: 2px solid #eaeaea;
+        padding-bottom: 10px;
+      }
+
+      .step-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px dashed #e9ecef;
+      }
+
+      .step-item:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .step-icon {
+        width: 40px;
+        height: 40px;
+        background-color: var(--light-bg);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        color: var(--primary-color);
+        flex-shrink: 0;
+        font-size: 1.2rem;
+        box-shadow: 0 2px 5px rgba(67, 97, 238, 0.15);
+      }
+
+      .step-content {
+        flex-grow: 1;
+      }
+
+      .step-content h6 {
+        margin-bottom: 8px;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      .step-content p {
+        color: #555;
+        font-size: 1.1rem;
+        margin-bottom: 0;
+        line-height: 1.5;
+      }
+
+      /* Enhanced Order Details Section */
+      .order-details-section h5 {
+        margin-bottom: 20px;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        border-bottom: 2px solid #eaeaea;
+        padding-bottom: 10px;
+      }
+      .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        padding: 12px 20px;
+        font-weight: 500;
+        border-radius: var(--border-radius);
+        transition: all 0.2s;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      @media (max-width: 768px) {
+        .confirmation-header {
+          padding: 25px 15px;
+        }
+
+        .confirmation-badge {
+          width: 60px;
+          height: 60px;
+          font-size: 28px;
+        }
+
+        .step-content h6 {
+          font-size: 1.2rem;
+        }
+
+        .step-content p {
+          font-size: 1rem;
+        }
+      }
+
+      .me-2 {
+        margin-right: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container py-5">
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <!-- Main Card -->
+          <div class="card mb-4">
+            <!-- Confirmation Header -->
+            <div class="confirmation-header">
+              <div class="confirmation-badge">
+                <i class="fas fa-check"></i>
+              </div>
+              <h2 class="mb-2">Order Confirmed!</h2>
+              <p class="mb-0">Thank you for your purchase</p>
+            </div>
+
+            <div class="card-body p-4">
+              <!-- Order ID and Date -->
+              <div id="orderInfo" class="order-header">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5 class="mb-1">Order #ORD12345678</h5>
+                    <p class="mb-0 text-muted">Placed on May 1, 2025</p>
+                  </div>
+                  <span class="status-badge"> Confirmed </span>
+                </div>
+              </div>
+
+              <div class="row">
+                <!-- Left Column: Customer Info -->
+                <div class="col-md-5 mb-4 mb-md-0">
+                  <div id="customerInfo" class="customer-info-card">
+                    <div class="info-section">
+                      <h6>Shipping Address</h6>
+                      <p><strong>John Smith</strong></p>
+                      <p>123 Main Street</p>
+                      <p>Apt 4B</p>
+                      <p>New York, NY 10001</p>
+                      <p>United States</p>
+                    </div>
+                    <div class="info-section">
+                      <h6>Contact Information</h6>
+                      <p>john.smith@example.com</p>
+                      <p>(555) 123-4567</p>
+                    </div>
+                    <div class="info-section">
+                      <h6>Payment Method</h6>
+                      <p>
+                        <i class="far fa-credit-card mr-2"></i> Visa ending in
+                        4321
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Order Timeline - Enhanced -->
+                  <div class="next-steps">
+                    <h5>What's Next</h5>
+                    <div class="step-item">
+                      <div class="step-icon">
+                        <i class="fas fa-box"></i>
+                      </div>
+                      <div class="step-content">
+                        <h6>Processing</h6>
+                        <p>
+                          Your order is being processed and prepared for
+                          shipping.
+                        </p>
+                      </div>
+                    </div>
+                    <div class="step-item">
+                      <div class="step-icon">
+                        <i class="fas fa-truck"></i>
+                      </div>
+                      <div class="step-content">
+                        <h6>Shipping</h6>
+                        <p>
+                          We'll notify you when your items are on their way.
+                        </p>
+                      </div>
+                    </div>
+                    <div class="step-item">
+                      <div class="step-icon">
+                        <i class="fas fa-home"></i>
+                      </div>
+                      <div class="step-content">
+                        <h6>Delivery</h6>
+                        <p>Your items will be delivered to your address.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right Column: Products and Summary - Enhanced -->
+                <div class="col-md-7 order-details-section">
+                  <h5>Order Details</h5>
+                  <div id="productList">
+                    <!-- Products will be populated by JavaScript -->
+                  </div>
+
+                  <!-- Order Summary - Enhanced -->
+                  <div class="summary-card mt-4">
+                    <div class="summary-row">
+                      <span>Subtotal</span>
+                      <span id="subtotal">$0.00</span>
+                    </div>
+                    <div class="summary-row">
+                      <span>Shipping</span>
+                      <span id="shipping">$0.00</span>
+                    </div>
+                    <div class="summary-row total-row">
+                      <span>Total</span>
+                      <span id="total">$0.00</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="my-4 d-flex justify-content-center">
+        <button
+          type="button"
+          class="btn btn-primary btn-lg w-25"
+          onclick="end()"
+        >
+          <i class="fas fa-home me-2"></i> Continue Shopping
+        </button>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get orders from localStorage
+        const orders = JSON.parse(localStorage.getItem("Orders") || "[]");
+
+        // Get the most recent order (last item in the array)
+        const lastOrder = orders.length > 0 ? orders[orders.length - 1] : null;
+
+        if (!lastOrder) {
+          // Display sample data if no orders found
+          console.log("No order information found. Showing sample data.");
+          return;
+        }
+
+        console.log("Order data:", lastOrder);
+
+        // Format date nicely
+        function formatDate(dateString) {
+          const options = {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          };
+          return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Display order information
+        const orderInfoDiv = document.getElementById("orderInfo");
+        orderInfoDiv.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1">Order #${lastOrder.orderId}</h5>
+                        <p class="mb-0 text-muted">Placed on ${formatDate(
+                          lastOrder.orderDate
+                        )}</p>
+                    </div>
+                    <span class="status-badge">
+                        ${lastOrder.status || "Confirmed"}
+                    </span>
+                </div>
+            `;
+
+        // Display customer information
+        const customerInfoDiv = document.getElementById("customerInfo");
+        // Try to get customer info from form data if available
+        const formData = JSON.parse(localStorage.getItem("orderData") || "{}");
+
+        if (formData.customer) {
+          customerInfoDiv.innerHTML = `
+                    <div class="info-section">
+                        <h6>Customer</h6>
+                        <p class="mb-1"><strong>${
+                          formData.customer.fullName
+                        }</strong></p>
+                        <p class="mb-0">${formData.customer.phoneNumber}</p>
+                    </div>
+                    <div class="info-section">
+                        <h6>Shipping Address</h6>
+                        <p class="mb-0">${formData.customer.address}, ${
+            formData.customer.city
+          }, ${formData.customer.country}</p>
+                    </div>
+                    ${
+                      formData.customer.orderNotes
+                        ? `
+                    <div class="info-section">
+                        <h6>Notes</h6>
+                        <p class="mb-0">${formData.customer.orderNotes}</p>
+                    </div>`
+                        : ""
+                    }
+                    <div class="info-section">
+                        <h6>Payment Method</h6>
+                        <p><i class="far fa-credit-card mr-2"></i> ${
+                          formData.customer.paymentMethod || "Credit Card"
+                        }</p>
+                    </div>
+                `;
+        } else {
+          // Keep default content if no customer data
+        }
+
+        // Display products
+        const productListDiv = document.getElementById("productList");
+        productListDiv.innerHTML = "";
+
+        if (lastOrder.products && Array.isArray(lastOrder.products)) {
+          lastOrder.products.forEach((productContainer) => {
+            // Check if the product is nested inside a 'product' property
+            const product = productContainer.product
+              ? productContainer.product
+              : productContainer;
+            const quantity = product.quantity_in_cart || product.quantity || 1;
+            const price = parseFloat(product.price || 0);
+            const itemTotal = price * quantity;
+
+            // Use product image if available, otherwise use placeholder
+            const imageUrl = product.image || "/api/placeholder/80/80";
+
+            const productItem = document.createElement("div");
+            productItem.className = "product-card d-flex align-items-center";
+            productItem.innerHTML = `
+                        <img src="${imageUrl}" alt="${
+              product.name
+            }" class="product-image">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="product-title mb-1">${
+                                      product.name
+                                    }</h5>
+                                    <p class="product-quantity mb-0">Quantity: ${quantity}</p>
+                                </div>
+                                <span class="product-price">$${itemTotal.toFixed(
+                                  2
+                                )}</span>
+                            </div>
+                        </div>
+                    `;
+            productListDiv.appendChild(productItem);
+          });
+        } else {
+          // If no products found, keep the sample products
+          productListDiv.innerHTML = `
+                    <div class="product-card d-flex align-items-center">
+                        <img src="/api/placeholder/80/80" alt="Product" class="product-image">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="product-title mb-1">Wireless Headphones</h5>
+                                    <p class="product-quantity mb-0">Quantity: 1</p>
+                                </div>
+                                <span class="product-price">$129.99</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="product-card d-flex align-items-center">
+                        <img src="/api/placeholder/80/80" alt="Product" class="product-image">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="product-title mb-1">Smart Watch</h5>
+                                    <p class="product-quantity mb-0">Quantity: 1</p>
+                                </div>
+                                <span class="product-price">$199.99</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        }
+
+        // Update order summary
+        const subtotal = parseFloat(lastOrder.subtotal || lastOrder.total || 0);
+        const shipping = parseFloat(lastOrder.shipping || 5.99);
+        const total = parseFloat(lastOrder.totalAmount || subtotal + shipping);
+
+        document.getElementById("subtotal").textContent = `$${subtotal.toFixed(
+          2
+        )}`;
+        document.getElementById("shipping").textContent = `$${shipping.toFixed(
+          2
+        )}`;
+        document.getElementById("total").textContent = `$${total.toFixed(2)}`;
+      });
+      function end() {
+        window.location.href = "/index.html";
+      }
+    </script>
+  </body>
+</html>

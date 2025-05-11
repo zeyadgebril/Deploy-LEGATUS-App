@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Legatus | Luxury Watches</title>
+    <link rel="icon" href="./images/web icon.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Using only FontAwesome for consistency -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --primary: #0a2540;
+        --primary-light: #1a4b7a;
+        --secondary: #d4af37;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --gray: #6c757d;
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+      
+      body {
+        font-family: 'Montserrat', sans-serif;
+        color: var(--dark);
+        overflow-x: hidden;
+      }
+      
+      h1, h2, h3, .navbar-brand {
+        font-family: 'Playfair Display', serif;
+        font-weight: 600;
+      }
+      
+      /* Top Bar */
+      .top-bar {
+        background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        color: white;
+        font-size: 0.85rem;
+        padding: 8px 0;
+      }
+      
+      /* Navigation */
+      .navbar {
+        background-color: white;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        padding: 15px 0;
+        transition: var(--transition);
+      }
+      
+      .navbar.scrolled {
+        padding: 10px 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      }
+      
+      .navbar-brand {
+        color: var(--primary) !important;
+        font-size: 32px;
+        letter-spacing: 1px;
+      }
+      
+      .nav-link {
+        color: var(--primary) !important;
+        font-weight: 500;
+        margin: 0 10px;
+        position: relative;
+      }
+      
+      .nav-link:after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 0;
+        background-color: var(--secondary);
+        transition: var(--transition);
+      }
+      
+      .nav-link:hover:after {
+        width: 100%;
+      }
+      
+      .btn-outline-primary {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+      
+      .btn-outline-primary:hover {
+        background-color: var(--primary);
+        color: white;
+      }
+      
+      /* Hero Carousel */
+      .carousel {
+        height: 70vh;
+        min-height: 500px;
+      }
+      
+      .carousel-item {
+        height: 100%;
+      }
+      
+      .carousel-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+      
+      .carousel-caption {
+        bottom: 30%;
+        background: rgba(10, 37, 64, 0.7);
+        backdrop-filter: blur(5px);
+        padding: 30px;
+        border-radius: 5px;
+        animation: fadeIn 1s ease;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      /* Page Header */
+      .page-header {
+        background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        color: white;
+        padding: 60px 0;
+        margin-bottom: 50px;
+      }
+      
+      /* Filter Section */
+      .filter-section {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        padding: 25px;
+        position: sticky;
+        top: 20px;
+        height: calc(100vh - 40px);
+        overflow-y: auto;
+      }
+      
+      .filter-section::-webkit-scrollbar {
+        width: 5px;
+      }
+      
+      .filter-section::-webkit-scrollbar-thumb {
+        background-color: var(--gray);
+        border-radius: 10px;
+      }
+      
+      .accordion-button {
+        font-weight: 600;
+        padding: 15px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      }
+      
+      .accordion-button:not(.collapsed) {
+        color: var(--primary);
+        background-color: transparent;
+      }
+      
+      .form-check-input:checked {
+        background-color: var(--primary);
+        border-color: var(--primary);
+      }
+      
+      /* Product Cards */
+      .product-card {
+        border: none;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: var(--transition);
+        margin-bottom: 30px;
+      }
+      
+      .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      }
+      
+      .product-img-container {
+        height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f9f9f9;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .product-img {
+        max-width: 80%;
+        max-height: 80%;
+        transition: var(--transition);
+      }
+      
+      .product-card:hover .product-img {
+        transform: scale(1.05);
+      }
+      
+      .product-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background-color: var(--secondary);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      
+      .product-body {
+        padding: 20px;
+      }
+      
+      .product-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--primary);
+      }
+      
+      .product-price {
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 1.2rem;
+      }
+      
+      .product-rating {
+        color: var(--secondary);
+        margin-bottom: 15px;
+      }
+      
+      .btn-add-to-cart {
+        background-color: var(--primary);
+        color: white;
+        width: 100%;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: 500;
+        transition: var(--transition);
+      }
+      
+      .btn-add-to-cart:hover {
+        background-color: var(--primary-light);
+      }
+      
+      /* Footer */
+      .footer {
+        background-color: var(--primary);
+        color: white;
+        padding: 60px 0 30px;
+        margin-top: 80px;
+      }
+      
+      .footer-links h5 {
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+      
+      .footer-links ul {
+        list-style: none;
+        padding: 0;
+      }
+      
+      .footer-links li {
+        margin-bottom: 10px;
+      }
+      
+      .footer-links a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        transition: var(--transition);
+      }
+      
+      .footer-links a:hover {
+        color: white;
+        padding-left: 5px;
+      }
+      
+      .social-icons a {
+        color: white;
+        font-size: 20px;
+        margin-right: 15px;
+        transition: var(--transition);
+      }
+      
+      .social-icons a:hover {
+        color: var(--secondary);
+        transform: translateY(-3px);
+      }
+      
+      .copyright {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 20px;
+        margin-top: 40px;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 14px;
+      }
+      
+      /* Responsive Adjustments */
+      @media (max-width: 991.98px) {
+        .filter-section {
+          height: auto;
+          position: static;
+          margin-bottom: 30px;
+        }
+        
+        .carousel {
+          height: 50vh;
+        }
+        
+        .carousel-caption {
+          bottom: 20%;
+          padding: 20px;
+        }
+      }
+      
+      @media (max-width: 767.98px) {
+        .navbar-brand {
+          font-size: 28px;
+        }
+        
+        .carousel {
+          height: 40vh;
+          min-height: 400px;
+        }
+        
+        .page-header {
+          padding: 40px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Bar -->
+    <div class="top-bar text-center">
+      <div class="container">
+        <div>Free Shipping Worldwide | Authentic Luxury Watches</div>
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+      <div class="container">
+        <a class="navbar-brand" href="#">LEGATUS</a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Shop</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Collections</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Contact</a>
+            </li>
+          </ul>
+          
+          <div class="d-flex align-items-center">
+            <form class="d-flex me-3">
+              <div class="input-group">
+                <input class="form-control" type="search" placeholder="Search watches...">
+                <button class="btn btn-outline-primary" type="submit">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
+            </form>
+            
+            <div class="d-flex ms-3">
+              <a href="#" class="text-dark me-3 position-relative">
+                <i class="fas fa-heart fs-5"></i>
+              </a>
+              <a href="#" class="text-dark position-relative">
+                <i class="fas fa-shopping-bag fs-5"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  2
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Hero Carousel -->
+    <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="2"></button>
+      </div>
+      
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1480&q=80" class="carousel-img" alt="Luxury Watch">
+          <div class="carousel-caption d-none d-md-block text-start">
+            <h2 class="display-5">Timeless Elegance</h2>
+            <p class="lead">Discover our new collection of luxury timepieces</p>
+            <a href="#" class="btn btn-light mt-2">Shop Now</a>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" class="carousel-img" alt="Luxury Watch">
+          <div class="carousel-caption d-none d-md-block text-start">
+            <h2 class="display-5">Precision Crafted</h2>
+            <p class="lead">Swiss-made excellence since 1920</p>
+            <a href="#" class="btn btn-light mt-2">Explore Heritage</a>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <img src="https://images.unsplash.com/photo-1526045431048-f857369baa09?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" class="carousel-img" alt="Luxury Watch">
+          <div class="carousel-caption d-none d-md-block text-start">
+            <h2 class="display-5">Limited Editions</h2>
+            <p class="lead">Exclusive timepieces for collectors</p>
+            <a href="#" class="btn btn-light mt-2">View Collection</a>
+          </div>
+        </div>
+      </div>
+      
+      <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+    
+    <!-- Page Header -->
+    <div class="page-header text-center">
+      <div class="container">
+        <h1 class="display-4 mb-3">Our Watch Collection</h1>
+        <p class="lead">Crafted with precision, designed for eternity</p>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="container mb-5">
+      <div class="row">
+        <!-- Filter Section -->
+        <div class="col-lg-3">
+          <div class="filter-section">
+            <h4 class="mb-4">Filter By</h4>
+            
+            <div class="accordion" id="filterAccordion">
+              <div class="accordion-item border-0">
+                <h5 class="accordion-header">
+                  <button class="accordion-button px-0" type="button" data-bs-toggle="collapse" data-bs-target="#categoryFilter">
+                    Category
+                  </button>
+                </h5>
+                <div id="categoryFilter" class="accordion-collapse collapse show">
+                  <div class="accordion-body px-0 pt-0">
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="radio" name="category" id="allCategories" checked>
+                      <label class="form-check-label" for="allCategories">
+                        All Categories
+                      </label>
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="radio" name="category" id="mensWatches">
+                      <label class="form-check-label" for="mensWatches">
+                        Men's Watches
+                      </label>
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="radio" name="category" id="womensWatches">
+                      <label class="form-check-label" for="womensWatches">
+                        Women's Watches
+                      </label>
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="radio" name="category" id="unisexWatches">
+                      <label class="form-check-label" for="unisexWatches">
+                        Unisex Watches
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="accordion-item border-0 mt-3">
+                <h5 class="accordion-header">
+                  <button class="accordion-button px-0 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#brandFilter">
+                    Brand
+                  </button>
+                </h5>
+                <div id="brandFilter" class="accordion-collapse collapse show">
+                  <div class="accordion-body px-0 pt-0">
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="checkbox" id="rolexBrand">
+                      <label class="form-check-label" for="rolexBrand">
+                        Rolex
+                      </label>
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="checkbox" id="omegaBrand">
+                      <label class="form-check-label" for="omegaBrand">
+                        Omega
+                      </label>
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="checkbox" id="patekBrand">
+                      <label class="form-check-label" for="patekBrand">
+                        Patek Philippe
+                      </label>
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="checkbox" id="audemarsBrand">
+                      <label class="form-check-label" for="audemarsBrand">
+                        Audemars Piguet
+                      </label>
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="checkbox" id="cartierBrand">
+                      <label class="form-check-label" for="cartierBrand">
+                        Cartier
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="accordion-item border-0 mt-3">
+                <h5 class="accordion-header">
+                  <button class="accordion-button px-0 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#priceFilter">
+                    Price Range
+                  </button>
+                </h5>
+                <div id="priceFilter" class="accordion-collapse collapse show">
+                  <div class="accordion-body px-0 pt-0">
+                    <div class="range-slider mb-3">
+                      <input type="range" class="form-range" min="0" max="10000" step="500" id="priceRange">
+                      <div class="d-flex justify-content-between">
+                        <span>$0</span>
+                        <span>$10,000</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Products Section -->
+        <div class="col-lg-9">
+          <div class="row">
+            <!-- Product Card 1 -->
+            <div class="col-md-6 col-lg-4">
+              <div class="product-card">
+                <div class="product-img-container">
+                  <span class="product-badge">New</span>
+                  <img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1480&q=80" class="product-img" alt="Rolex Submariner">
+                </div>
+                <div class="product-body">
+                  <div class="product-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                    <span class="ms-1">(42)</span>
+                  </div>
+                  <h3 class="product-title">Rolex Submariner</h3>
+                  <p class="text-muted mb-2">Stainless Steel, Black Dial</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="product-price">$8,950</span>
+                    <button class="btn-add-to-cart">
+                      <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Product Card 2 -->
+            <div class="col-md-6 col-lg-4">
+              <div class="product-card">
+                <div class="product-img-container">
+                  <img src="https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" class="product-img" alt="Omega Seamaster">
+                </div>
+                <div class="product-body">
+                  <div class="product-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                    <span class="ms-1">(36)</span>
+                  </div>
+                  <h3 class="product-title">Omega Seamaster</h3>
+                  <p class="text-muted mb-2">Blue Dial, Ceramic Bezel</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="product-price">$5,200</span>
+                    <button class="btn-add-to-cart">
+                      <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Product Card 3 -->
+            <div class="col-md-6 col-lg-4">
+              <div class="product-card">
+                <div class="product-img-container">
+                  <span class="product-badge">-15%</span>
+                  <img src="https://images.unsplash.com/photo-1526045431048-f857369baa09?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" class="product-img" alt="Cartier Tank">
+                </div>
+                <div class="product-body">
+                  <div class="product-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <span class="ms-1">(28)</span>
+                  </div>
+                  <h3 class="product-title">Cartier Tank</h3>
+                  <p class="text-muted mb-2">18K Gold, Brown Leather</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="product-price"><span class="text-decoration-line-through text-muted me-2">$6,500</span> $5,525</span>
+                    <button class="btn-add-to-cart">
+                      <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Product Card 4 -->
+            <div class="col-md-6 col-lg-4">
+              <div class="product-card">
+                <div class="product-img-container">
+                  <img src="https://images.unsplash.com/photo-1551818255-e6e10975bc17?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1432&q=80" class="product-img" alt="Patek Philippe">
+                </div>
+                <div class="product-body">
+                  <div class="product-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <span class="ms-1">(19)</span>
+                  </div>
+                  <h3 class="product-title">Patek Philippe</h3>
+                  <p class="text-muted mb-2">White Gold, Blue Dial</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="product-price">$22,750</span>
+                    <button class="btn-add-to-cart">
+                      <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Product Card 5 -->
+            <div class="col-md-6 col-lg-4">
+              <div class="product-card">
+                <div class="product-img-container">
+                  <span class="product-badge">Limited</span>
+                  <img src="https://images.unsplash.com/photo-1611591437281-4608be122683?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" class="product-img" alt="Audemars Piguet">
+                </div>
+                <div class="product-body">
+                  <div class="product-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                    <span class="ms-1">(31)</span>
+                  </div>
+                  <h3 class="product-title">Audemars Piguet</h3>
+                  <p class="text-muted mb-2">Royal Oak, Stainless Steel</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="product-price">$28,900</span>
+                    <button class="btn-add-to-cart">
+                      <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Product Card 6 -->
+            <div class="col-md-6 col-lg-4">
+              <div class="product-card">
+                <div class="product-img-container">
+                  <img src="https://images.unsplash.com/photo-1539874754764-5a96559165b0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" class="product-img" alt="Jaeger-LeCoultre">
+                </div>
+                <div class="product-body">
+                  <div class="product-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                    <span class="ms-1">(24)</span>
+                  </div>
+                  <h3 class="product-title">Jaeger-LeCoultre</h3>
+                  <p class="text-muted mb-2">Reverso, Black Leather</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="product-price">$7,850</span>
+                    <button class="btn-add-to-cart">
+                      <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Pagination -->
+          <nav aria-label="Page navigation" class="mt-5">
+            <ul class="pagination justify-content-center">
+              <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">Previous</a>
+              </li>
+              <li class="page-item active"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-4 mb-4 mb-lg-0">
+            <h3 class="mb-4">LEGATUS</h3>
+            <p>Since 1920, we've been providing the finest selection of luxury timepieces to collectors and enthusiasts worldwide.</p>
+            <div class="social-icons mt-4">
+              <a href="#"><i class="fab fa-facebook-f"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-pinterest"></i></a>
+            </div>
+          </div>
+          
+          <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+            <h5 class="footer-links">Shop</h5>
+            <ul>
+              <li><a href="#">New Arrivals</a></li>
+              <li><a href="#">Best Sellers</a></li>
+              <li><a href="#">Limited Editions</a></li>
+              <li><a href="#">Vintage Collection</a></li>
+              <li><a href="#">Gift Cards</a></li>
+            </ul>
+          </div>
+          
+          <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+            <h5 class="footer-links">Services</h5>
+            <ul>
+              <li><a href="#">Watch Repair</a></li>
+              <li><a href="#">Authentication</a></li>
+              <li><a href="#">Trade-In</a></li>
+              <li><a href="#">Financing</a></li>
+              <li><a href="#">Warranty</a></li>
+            </ul>
+          </div>
+          
+          <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+            <h5 class="footer-links">Company</h5>
+            <ul>
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Our Story</a></li>
+              <li><a href="#">Blog</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+          </div>
+          
+          <div class="col-lg-2 col-md-12">
+            <h5 class="footer-links">Customer Care</h5>
+            <ul>
+              <li><a href="#">FAQ</a></li>
+              <li><a href="#">Shipping</a></li>
+              <li><a href="#">Returns</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="copyright text-center">
+          <p>&copy; 2023 Legatus Watches. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Navbar scroll effect
+      window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      });
+      
+      // Initialize tooltips
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltip)})

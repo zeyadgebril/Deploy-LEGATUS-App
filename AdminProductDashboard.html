@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard For Products</title>
+    <link rel="icon" href="./images/web icon.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <!-- Import access control -->
+    <script type="module" src="Sign/Initialize.js"></script>
+    <style>
+      body {
+        background-color: #f5f7f6;
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .sidebar {
+        width: 190px;
+        background-color: #002f5f;
+        color: #fff;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+      }
+      .sidebar .logo {
+        width: 100%;
+        padding: 20px;
+        text-align: center;
+      }
+      .sidebar .logo img {
+        width: 140px;
+      }
+      .sidebar a {
+        color: #bdc3c7;
+        text-decoration: none;
+        padding: 15px 20px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: background-color 0.3s;
+      }
+      .sidebar a.active,
+      .sidebar a:hover {
+        background-color: #112235;
+        color: #fff;
+      }
+      .main-content {
+        margin-left: 190px;
+        padding: 20px;
+      }
+      .navbar {
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .search-input {
+        max-width: 300px;
+      }
+      .card {
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+      .table-responsive {
+        overflow-x: auto;
+      }
+      .table-sm th,
+      .table-sm td {
+        padding: 0.6rem;
+        text-align: center;
+        vertical-align: middle;
+      }
+      th {
+        background-color: #1a1a2e;
+        color: #fff;
+      }
+      .btn {
+        border-radius: 16px;
+        padding: 4px 8px;
+        font-size: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+      }
+      .btn-delete {
+        background-color: #d63031;
+        color: #fff;
+      }
+      .btn-delete:hover {
+        background-color: #f24848;
+      }
+      .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+      }
+      .stock-badge {
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        display: inline-block;
+      }
+      .stock-low {
+        background-color: #f1c40f;
+        color: #fff;
+      }
+      .stock-available {
+        background-color: #2ecc71;
+        color: #fff;
+      }
+      img.product-image {
+        width: 50px;
+        height: 50px;
+        object-fit: contain;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo text-center py-4">
+        <h1
+          class="d-flex align-items-center justify-content-center gap-2 text-white fs-3 m-0"
+        >
+          <i class="bi bi-shield-lock"></i>
+          <span>Admin</span>
+        </h1>
+      </div>
+      <a href="AdminDashboard.html"><i class="bi bi-person"></i> Customer</a>
+      <a href="AdminSellerDashboard.html"><i class="bi bi-shop"></i> Seller</a>
+      <a href="AdminProductDashboard.html" class="active"
+        ><i class="bi bi-bag"></i> Products</a
+      >
+      <a href="AdminDashboardCustomerService.html"
+        ><i class="bi bi-people"></i> Customer Service</a
+      >
+      <a href="index.html"><i class="bi bi-house-door-fill"></i> Home Page</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <nav class="navbar navbar-light mb-3">
+        <div class="container-fluid">
+          <div class="input-group search-input">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input
+              id="searchInput"
+              class="form-control"
+              type="search"
+              placeholder="Search by Brand"
+              aria-label="Search"
+            />
+          </div>
+        </div>
+      </nav>
+
+      <h3 class="mb-3">Products Data</h3>
+
+      <div class="card p-3">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Brand</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Seller Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function renderProducts() {
+        let products = JSON.parse(localStorage.getItem("products")) || [];
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+
+        const tbody = document.getElementById("productTableBody");
+        tbody.innerHTML = "";
+
+        if (products.length === 0) {
+          const row = document.createElement("tr");
+          row.innerHTML = `<td colspan="8" style="text-align:center; color: gray;">No Products Available</td>`;
+          tbody.appendChild(row);
+          return;
+        }
+
+        products.forEach((product) => {
+          const seller = users.find(
+            (user) =>
+              user.role === "seller" &&
+              String(user.id) === String(product.sellerId)
+          );
+
+          const sellerName = seller ? seller.name : "N/A";
+          const sellerEmail = seller ? seller.email : "N/A";
+
+          const row = document.createElement("tr");
+          row.innerHTML = `
+      <td><img src="${
+        product.image
+      }" class="product-image" alt="Product Image"></td>
+      <td>${product.name}</td>
+      <td>${product.brand}</td>
+      <td>$${parseFloat(product.price).toFixed(2)}</td>
+      <td>
+        <span class="stock-badge ${
+          product.stock <= 5 ? "stock-low" : "stock-available"
+        }">
+          In Stock (${product.stock})
+        </span>
+      </td>
+      <td>${sellerName}</td>
+      <td>${sellerEmail}</td>
+      <td>
+        <div class="action-buttons">
+          <button class="btn btn-delete" onclick="deleteProduct('${
+            product.id
+          }')">
+            <i class="bi bi-trash"></i> Delete
+          </button>
+        </div>
+      </td>
+    `;
+          tbody.appendChild(row);
+        });
+      }
+
+      function deleteProduct(id) {
+        let products = JSON.parse(localStorage.getItem("products")) || [];
+        products = products.filter((product) => product.id !== id);
+        localStorage.setItem("products", JSON.stringify(products));
+        renderProducts();
+      }
+
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", function () {
+          const filter = this.value.trim().toLowerCase();
+          document.querySelectorAll("#productTableBody tr").forEach((row) => {
+            const brand = row
+              .querySelector("td:nth-child(3)")
+              .textContent.trim()
+              .toLowerCase();
+            row.style.display = brand.includes(filter) ? "" : "none";
+          });
+        });
+
+      window.onload = renderProducts;
+    </script>
+  </body>
+</html>

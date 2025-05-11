@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ProductDetails</title>
+    <link rel="icon" href="../images/web icon.png" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7"
+      crossorigin="anonymous"
+    />
+    <!-- FontAwesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <!--FontAwesome  -->
+    <!-- nav -->
+    <link rel="stylesheet" href="../nav.css" />
+
+    <style>
+      :root {
+        --primary-color: #1a1a1a;
+        --accent-color: #c4a47c;
+        --light-gray: #f8f9fa;
+        --medium-gray: #e9ecef;
+        --dark-gray: #495057;
+      }
+      body {
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        color: var(--primary-color);
+        background-color: #ffffff;
+        overflow-x: hidden;
+      }
+      #watch_name {
+        font-size: 2.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
+      }
+      #watch_price {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--accent-color);
+        margin-bottom: 1.5rem;
+      }
+      .description {
+        font-size: 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 0.75rem;
+        letter-spacing: 1px;
+      }
+      #watch_description {
+        font-size: 0.95rem;
+        color: var(--dark-gray);
+        line-height: 1.6;
+        margin-bottom: 2rem;
+      }
+      .thumb-img {
+        width: 70px;
+        height: 70px;
+        margin-right: 20px;
+        object-fit: cover;
+        margin-top: 10px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        border-radius: 0.5rem;
+      }
+      .thumb-img.active {
+        border: 2px solid black;
+        transform: scale(1.05);
+      }
+      .main-image-container {
+        background-color: var(--light-gray);
+        border-radius: 0.75rem;
+        padding: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        position: relative;
+        height: 450px;
+      }
+      .main-image {
+        max-width: 100%;
+        max-height: 400px;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+      }
+      .main-image:hover {
+        transform: scale(1.05);
+      }
+      .action-buttons {
+        display: flex;
+        gap: 0.75rem; 
+      }
+      .btn-cart {
+        background-color: white;
+        color: #002f5f;
+        border: 2px solid var(--primary-color);
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .btn-cart:hover {
+        background-color: #002f5f;
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .btn-buy {
+        background-color: #002f5f;
+        color: white;
+        border: 2px solid var(--primary-color);
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .btn-buy:hover {
+        background-color: white;
+        color: #002f5f;
+        border: 2px solid var(--primary-color);
+        transform: translateY(-2px);
+      }
+      .zoom-icon {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background-color: rgba(255, 255, 255, 0.7);
+        width: 2.5rem;
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        color: var(--primary-color);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .zoom-icon:hover {
+        background-color: white;
+        transform: scale(1.1);
+      }
+      .quantity-container {
+        margin-top: 2rem;
+      }
+
+      .quantity-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .quantity-input {
+        max-width: 10rem;
+      }
+      .input-group .btn {
+        background-color: var(--medium-gray);
+        border-color: var(--medium-gray);
+        color: var(--primary-color);
+        font-weight: 600;
+      }
+
+      .input-group .form-control {
+        border-color: var(--medium-gray);
+        font-weight: 500;
+      }
+      .stock-status {
+        display: inline-block;
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+      }
+      .out-of-stock {
+      background-color: #ffebee;
+      color: #c62828;
+      }
+
+      @media (max-width: 767.98px) {
+        .product-container {
+          padding: 1.5rem 1rem;
+        }
+
+        .main-image-container {
+          height: 300px;
+          padding: 1rem;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .btn-cart,
+        .btn-buy {
+          width: 100%;
+          margin: 0 !important;
+        }
+        #buyNowBtn {
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <special-nav></special-nav>
+    <div class="product-container py-5 mt-lg-5">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="text-center">
+            <div class="main-image-container">
+              <img
+                id="mainImg"
+                src="OIP (6).jpg"
+                class="img-fluid main-image"
+                alt="Luxury watch"
+              />
+              <div class="zoom-icon" id="zoomBtn">
+                <i class="fas fa-search-plus"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="stock-status" id="stockStatus">
+            <i class="fas fa-check-circle me-1"></i> In Stock
+          </div>
+          <h1 id="watch_name">Watch1</h1>
+          <h3 id="watch_price" class="text mb-3">$20.000</h3>
+          <h6 class="description">Description</h6>
+          <p id="watch_description">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima
+            sint, velit illum tempora molestiae rerum exercitationem aperiam
+            quidem sequi eligendi officiis suscipit nam dignissimos eum quod,
+            consequatur ratione eveniet fuga!
+          </p>
+          <div class="quantity-container">
+            <label for="quantity" class="quantity-label">Quantity:</label>
+            <div class="input-group quantity-input">
+              <button class="btn" type="button" onclick="minus()">
+                <i class="fas fa-minus"></i>
+              </button>
+              <input
+                type="text"
+                class="form-control text-center"
+                id="quantity"
+                value="1"
+              />
+              <button class="btn" type="button" onclick="plus()">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+            <div class="action-buttons mt-3">
+              <button
+                class="btn btn-cart"
+                id="addToCartBtn"
+                onclick="addToCart()"
+              >
+                <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+              </button>
+              <button
+                class="btn btn-buy "
+                id="buyNowBtn"
+                onclick="BuyNow()"
+              >
+                <i class="fas fa-bolt me-2"></i> Buy Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      id="messageBox"
+      style="color: red; margin-top: 10px; font-weight: bold"
+    ></div>
+    <!-- Modal for zoomed image -->
+    <div
+      class="modal fade"
+      id="imageModal"
+      tabindex="-1"
+      aria-labelledby="imageModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body text-center">
+            <img
+              id="zoomedImg"
+              src=""
+              class="img-fluid"
+              alt="Zoomed watch image"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Toast notification -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+      <div
+        id="cartToast"
+        class="toast"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div class="toast-header">
+          <i class="fas fa-check-circle text-success me-2"></i>
+          <strong class="me-auto">Success</strong>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="toast-body">Item added to your cart successfully!</div>
+      </div>
+    </div>
+    <!-- New out-of-stock toast -->
+<div
+id="stockToast"
+class="toast"
+role="alert"
+aria-live="assertive"
+aria-atomic="true"
+>
+<div class="toast-header bg-danger text-white">
+  <i class="fas fa-exclamation-circle me-2"></i>
+  <strong class="me-auto">Out of Stock</strong>
+  <button
+    type="button"
+    class="btn-close btn-close-white"
+    data-bs-dismiss="toast"
+    aria-label="Close"
+  ></button>
+</div>
+<div class="toast-body" id="stockToastMessage">This product is out of stock!</div>
+</div>
+    <special-footer></special-footer>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      const productData = {
+        id: "WTC-001",
+        name: "Watch1",
+        price: 20.0,
+        image: "OIP (6).jpg",
+      };
+
+      //get curnt [product data]
+      const productId = localStorage.getItem("currentProduct");
+      //Find that product in your list
+      const allProducts = JSON.parse(localStorage.getItem("products"));
+      const product = allProducts.find((p) => p.id == productId);
+      // console.log("Image path:", product.image);
+      document.getElementById("mainImg").src = product.image;
+      document.getElementById("watch_name").textContent = product.name;
+      document.getElementById("watch_price").textContent = product.price;
+      document.getElementById("watch_description").textContent =
+        product.description;
+      const input = document.getElementById("quantity"); //reading the quantity
+      const zoomedImg = document.getElementById("zoomedImg");
+      const zoomBtn = document.getElementById("zoomBtn");
+      const cartToast = new bootstrap.Toast(
+        document.getElementById("cartToast")
+      );
+      const addToCartBtn = document.getElementById("addToCartBtn");
+      const imageModal = new bootstrap.Modal(
+        document.getElementById("imageModal")
+      );
+
+      // Set minimum quantity to 1
+      if (parseInt(input.value) < 1) {
+        input.value = 1;
+      }
+
+      function minus() {
+        let value = parseInt(input.value); //parse into integer
+        if (value > 1) {
+          //check if it's bigger than one
+          input.value = value - 1; //input.value to update the value of the input ..just value will the update the variable but not the input
+        }
+      }
+      function plus() {
+  let value = parseInt(input.value); //parse into integer
+  if (value < product.stock) {
+    input.value = value + 1;
+  } else {
+    showStockToast(`Out of stock.`);
+  }
+}
+function showStockToast(message) {
+  // Set the message in the toast
+  document.getElementById("stockToastMessage").textContent = message;
+  
+  // Initialize and show the toast
+  const stockToast = new bootstrap.Toast(document.getElementById("stockToast"));
+  stockToast.show();
+}
+      function changeImage(el) {
+        document.getElementById("mainImg").src = el.src;
+        document
+          .querySelectorAll(".thumb-img")
+          .forEach((img) => img.classList.remove("active"));
+        el.classList.add("active");
+      }
+      input.addEventListener("input", function () {
+        this.value = this.value.replace(/[^0-9]/g, "");
+        if (this.value === "" || parseInt(this.value) < 1) {
+          this.value = 1;
+        }
+        updateTotalPrice();
+      });
+      function updateTotalPrice() {
+        // This would typically calculate the total based on quantity * item price
+        // For demonstration, we're just going to log the quantity
+        console.log(`Quantity updated: ${input.value}`);
+      }
+      zoomBtn.addEventListener("click", function () {
+        zoomedImg.src = product.image;
+        imageModal.show();
+      });
+
+function addToCart() {
+  const quantity = parseInt(document.getElementById("quantity").value);
+  
+  // Stock validation - check if there's enough stock
+  if (product.stock <= 0) {
+    showStockToast("Sorry, this product is out of stock.");
+    return; // Stop here if out of stock
+  }
+  
+  // Check if requested quantity exceeds available stock
+  if (quantity > product.stock) {
+    showStockToast(`Sorry, only ${product.stock} items available in stock.`);
+    // Set quantity input to max available
+    document.getElementById("quantity").value = product.stock;
+    return; // Stop execution
+  }
+  
+  // Get cart and current user from localStorage
+  let cart = JSON.parse(localStorage.getItem("Cart")) || [];
+  let currentUser = localStorage.getItem("currentUser") || null;
+  if (currentUser) {
+    currentUser = JSON.parse(currentUser);
+  }
+  
+  // Check if a user is logged in
+  if (!currentUser || !currentUser.id) {
+    showStockToast("Please log in to add items to your cart.");
+    return;
+  }
+  
+  // Continue with the rest of the function as before
+  let currentUserId = currentUser.id;
+  let item = {
+    userId: currentUserId,
+    product: {
+      name: product.name,
+      id: product.id,
+      image: product.image,
+      price: `${product.price} $`,
+      quantity_in_cart: quantity,
+      max_quantity: product.stock,
+      sellerId: product.sellerId,
+    },
+  };
+  
+  // Find if the same product already exists in cart for the same user
+  const existingItemIndex = cart.findIndex(
+    (cartItem) =>
+      cartItem.userId === item.userId &&
+      cartItem.product.id === item.product.id
+  );
+  
+  // Check if adding to existing cart item would exceed stock
+  if (existingItemIndex !== -1) {
+    const newTotalQuantity = cart[existingItemIndex].product.quantity_in_cart + quantity;
+    if (newTotalQuantity > product.stock) {
+      showStockToast(`Cannot add ${quantity} more. You already have ${cart[existingItemIndex].product.quantity_in_cart} in cart and only ${product.stock} available.`);
+      return; // Stop execution
+    }
+    cart[existingItemIndex].product.quantity_in_cart += quantity;
+  } else {
+    cart.push(item);
+  }
+  
+  localStorage.setItem("Cart", JSON.stringify(cart));
+    
+  // UI feedback - show success toast
+  console.log(`Added ${quantity} item(s) to cart`);
+  cartToast.show();
+
+  // Animation on button
+  addToCartBtn.classList.add("disabled");
+  setTimeout(() => {
+    addToCartBtn.classList.remove("disabled");
+  }, 1000);
+}
+document.addEventListener('DOMContentLoaded', function () {
+  if (product.stock <= 0) {
+    stockStatus.classList.add('out-of-stock');
+    stockStatus.innerHTML = '<i class="fas fa-times-circle me-1"></i> Out of Stock';
+  }
+});
+
+
+function BuyNow() {
+  const quantity = parseInt(document.getElementById("quantity").value);
+  
+  // Stock validation - check if there's enough stock
+  if (product.stock <= 0) {
+    showStockToast("Sorry, this product is out of stock.");
+    return; // Stop here if out of stock
+  }
+  
+  // Check if requested quantity exceeds available stock
+  if (quantity > product.stock) {
+    showStockToast(`Sorry, only ${product.stock} items available in stock.`);
+    // Set quantity input to max available
+    document.getElementById("quantity").value = product.stock;
+    return; // Stop execution
+  }
+  
+  let currentUser = localStorage.getItem("currentUser") || null;
+  if (currentUser) {
+    currentUser = JSON.parse(currentUser);
+  }
+  
+  // Check if a user is logged in
+  if (!currentUser || !currentUser.id) {
+    showStockToast("Please log in to proceed to checkout.");
+    return;
+  }
+  
+  let currentUserId = currentUser.id;
+  let checkoutItem = {
+    userId: currentUserId,
+    product: {
+      id: product.id,
+      name: product.name,
+      price: `${product.price} $`,
+      quantity: quantity,
+      image: product.image,
+      totalPrice: product.price * quantity,
+      sellerId: product.sellerId,
+    },
+  };
+  localStorage.setItem("checkout", JSON.stringify(checkoutItem));
+  window.location.href = "../checkout.html";
+}
+    </script>
+    <script src="../navFoterManager.js" type="module"></script>
+  </body>
+</html>

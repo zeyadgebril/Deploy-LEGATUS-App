@@ -1,0 +1,44 @@
+:root{
+    --filter_color : #002f5f;
+    --card_color : #002f5f;
+    --nav_color : #002f5f;
+  }
+
+
+
+.navbar{
+    background-color:var(--nav_color) ;
+    color: white !important;
+  }
+  .navbar-brand{
+    color: white !important;
+    font-size: 42px;
+  }
+  .nav-link{
+    
+    color: white !important;
+  }
+  #search_input{
+    border: 0;
+    padding: .375rem .75rem !important;
+    
+  }
+  .navbar-toggler {
+  border: none !important;
+  box-shadow: none !important;
+  }
+  #search_input:focus{
+    border: 0 !important;
+    box-shadow: none;
+  }
+  .search_icon{
+    color: #002f5f;
+  }
+
+  .dropdown-menu .dropdown-item:hover{
+    background-color: #dae5ef;
+  }
+  .dropdown-menu .dropdown-item:focus {
+  background-color: #002f5f; 
+  color: #fff;               
+  }
